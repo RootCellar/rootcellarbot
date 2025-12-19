@@ -12,6 +12,28 @@ from dotenv import load_dotenv
 load_dotenv()
 
 ADMIN_USERS = os.getenv('ADMIN_USERS')
+FORTUNES= [
+"It is certain",
+"It is decidedly so",
+"Without a doubt",
+"Yes definitely",
+"You may rely on it",
+"As I see it, yes",
+"Most likely",
+"Outlook good",
+"Yes",
+"Signs points to yes",
+"Reply hazy, try again",
+"Ask again later",
+"Better not tell you now",
+"Cannot predict now",
+"Concentrate and ask again",
+"Don't count on it",
+"My reply is no",
+"My sources say no",
+"Outlook not so good",
+"Very doubtful"
+]
 ERROR_MESSAGES = [ "huh?", "what?", "*implodes*", "no u", "AAAAAAAAAAAAAA", "I need....a penguin plushie", "whar?", "~~sanity~~", "explode", "you wish", "bruh", "|| no ||",
                    "I'm gonna", "Ask ChatGPT", "imagine", "yesn't", "Segmentation fault (core dumped)" ]
 
@@ -112,6 +134,51 @@ async def status_command(ctx, status: str, message: str):
         await update_presence(discord.Status.invisible, message)
     else:
         await ctx.send(random_error_message())
+
+@bot.command(name="joke", help="Drop a joke into the chat")
+async def joke_command(ctx):
+    request = requests.get("https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit")
+    joke = request.json()
+
+    assert joke["error"] == False
+
+    if joke["type"] == "twopart":
+        setup = joke["setup"]
+        delivery = joke["delivery"]
+        await ctx.send(f"{setup} \n || {delivery} ||")
+    else:
+        delivery = joke["joke"]
+        await ctx.send(f"{delivery}")
+
+@bot.command(name="mock", help="Generate and send a string mocking the given string")
+async def mock_command(ctx, *args):
+    message = ' '.join(args)
+    mocked_message = mock_string(message)
+    await ctx.send(mocked_message)
+
+@bot.command(name="roll_dice", help="Rolls dice and sends the total")
+async def roll_dice_command(ctx, num_dice: int, sides: int):
+    if num_dice < 1 or sides < 1:
+        await ctx.send(random_error_message())
+        return
+    if num_dice > 1000000 or sides > 1000000:
+        await ctx.send(random_error_message())
+        return
+
+    total = roll_dice(num_dice, sides)
+
+    await ctx.send(f"`{total}`")
+
+@bot.command(name="choose_random", help="Choose a random item out of the given items")
+async def choose_random_command(ctx, *args):
+    choice = random.choice(args)
+    await ctx.send(f"Random Choice: || `{choice}` ||")
+
+@bot.command(name="fortune", help="Ask a question and learn your fortune")
+async def fortune_command(ctx, *args):
+    joined = ' '.join(args)
+    fortune = random.choice(FORTUNES)
+    await ctx.send(fortune)
 
 #
 # Activity
