@@ -66,6 +66,15 @@ def log(message):
         file.write(f"{message_to_write} \n")
 
 #
+# On Connect
+#
+
+@bot.event
+async def on_ready():
+    log(f"Logged in as {bot.user}!")
+    await update_presence(discord.Status.online, "Running :D")
+
+#
 # Activity
 #
 
