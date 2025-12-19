@@ -162,7 +162,7 @@ async def joke_command(ctx):
     if joke["type"] == "twopart":
         setup = joke["setup"]
         delivery = joke["delivery"]
-        await ctx.send(f"{setup} \n || {delivery} ||")
+        await ctx.send(f"{setup} \n|| {delivery} ||")
     else:
         delivery = joke["joke"]
         await ctx.send(f"{delivery}")
