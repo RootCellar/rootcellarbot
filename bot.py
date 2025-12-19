@@ -134,12 +134,16 @@ async def hello_command(ctx):
 async def say_command(ctx, message: str):
     if is_admin_user(ctx.author):
         await ctx.send(message)
+    else:
+        await ctx.reply(f"Sorry, you don't have permission to do that.")
 
 @bot.command(name="say_to", help="Forces the bot to send the given message to the given channel (Admins only)")
 async def say_to_command(ctx, channel_id: int, message: str):
     if is_admin_user(ctx.author):
         channel = await bot.fetch_channel(channel_id)
         await channel.send(message)
+    else:
+        await ctx.reply(f"Sorry, you don't have permission to do that.")
 
 @bot.command(name="status", help="Changes the bot's status (Admins only)")
 async def status_command(ctx, status: str, message: str):
@@ -155,7 +159,8 @@ async def status_command(ctx, status: str, message: str):
     elif status == "invisible":
         await update_presence(discord.Status.invisible, message)
     else:
-        await ctx.send(random_error_message())
+        await ctx.reply(f"Sorry, you don't have permission to do that.")
+
 
 @bot.command(name="joke", help="Drop a joke into the chat")
 async def joke_command(ctx):
