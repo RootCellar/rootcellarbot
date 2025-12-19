@@ -193,6 +193,19 @@ async def quote_command(ctx):
 
     await ctx.send(f"> {line} \n - {author}")
 
+@bot.command(name="kitty", help="Drop a cute kitty photo into the chat")
+async def kitty_command(ctx):
+    async with ctx.typing():
+        request = requests.get("https://api.thecatapi.com/v1/images/search")
+        json = request.json()
+
+    item = json[0]
+    assert item is not None
+    url = item["url"]
+    assert url is not None
+
+    await ctx.send(f"{url}")
+
 @bot.command(name="mock", help="Generate and send a string mocking the given string")
 async def mock_command(ctx, *args):
     message = ' '.join(args)
