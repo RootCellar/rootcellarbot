@@ -137,8 +137,9 @@ async def status_command(ctx, status: str, message: str):
 
 @bot.command(name="joke", help="Drop a joke into the chat")
 async def joke_command(ctx):
-    request = requests.get("https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit")
-    joke = request.json()
+    async with ctx.typing():
+        request = requests.get("https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit")
+        joke = request.json()
 
     assert joke["error"] == False
 
