@@ -23,6 +23,39 @@ intents.typing = True
 
 bot = commands.Bot(command_prefix='rc!', intents=intents)
 
+def roll_dice(num_dice: int, sides: int):
+    total = 0
+    for x in range(1, num_dice + 1):
+        total += random.choice( range(1, sides + 1) )
+    return total
+
+def random_error_message():
+    return random.choice(ERROR_MESSAGES)
+
+def mock_string(message):
+    toRet = ""
+    for i in range(0, len(message)):
+        rand = random.randint(0, 2)
+        if rand == 0:
+            toRet += message[i].upper()
+        else:
+            toRet += message[i].lower()
+    return toRet
+
+def strip_non_ascii(text: str):
+    return re.sub(r'[^\x00-\x7f]', r'?', text)
+
+async def update_presence(status, message):
+  game = discord.Game(message)
+  await bot.change_presence(status=status, activity=game)
+
+def is_admin_user(user):
+    users = ADMIN_USERS.split(",")
+    for name in users:
+        if user.name == name:
+            return True
+    return False
+
 def log(message):
     now = datetime.datetime.now()
     formatted_datetime = now.strftime("%Y-%m-%d %H:%M:%S")
