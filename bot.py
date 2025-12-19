@@ -110,16 +110,16 @@ async def on_command_error(ctx, error):
     await ctx.send("well that threw an error")
     await ctx.send(random_error_message())
 
-@bot.command(name="hello")
+@bot.command(name="hello", help="Says hello")
 async def hello_command(ctx):
     await ctx.send("Hello! I'm a bot.")  # Responds to '!hello'
 
-@bot.command(name="say")
+@bot.command(name="say", help="Forces the bot to send the given message (Admins only)")
 async def say_command(ctx, message: str):
     if is_admin_user(ctx.author):
         await ctx.send(message)
 
-@bot.command(name="status")
+@bot.command(name="status", help="Changes the bot's status (Admins only)")
 async def status_command(ctx, status: str, message: str):
     if is_admin_user(ctx.author) is False:
         return
