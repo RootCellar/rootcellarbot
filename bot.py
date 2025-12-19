@@ -167,6 +167,20 @@ async def joke_command(ctx):
         delivery = joke["joke"]
         await ctx.send(f"{delivery}")
 
+@bot.command(name="quote", help="Drop a wise quote into the chat")
+async def quote_command(ctx):
+    async with ctx.typing():
+        request = requests.get("https://zenquotes.io/api/random")
+        quotes = request.json()
+
+    quote = quotes[0]
+    assert quote is not None
+
+    line = quote["q"]
+    author = quote["a"]
+
+    await ctx.send(f"> {line} \n - {author}")
+
 @bot.command(name="mock", help="Generate and send a string mocking the given string")
 async def mock_command(ctx, *args):
     message = ' '.join(args)
