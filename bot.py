@@ -216,7 +216,7 @@ def handle_activity_change(before, after):
     if should_display_updated_spotify_activity(before_spotify, after_spotify):
         log(f"Status: {username} is now listening to {after_spotify.artist} - {after_spotify.title}")
     if should_display_updated_playing_activity(before_playing, after_playing):
-        log(f"Status: {username} is now playing {after_playing.name}")
+        log(f"Status: {username} is now playing {after_playing.name} ({after_playing.state}, {after_playing.details})")
 
 def should_display_updated_playing_activity(before, after):
     if isinstance(after, discord.Activity) is False:
