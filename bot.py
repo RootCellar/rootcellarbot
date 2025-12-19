@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+DEFAULT_STATUS_MESSAGE = os.getenv('DEFAULT_STATUS_MESSAGE')
 ADMIN_USERNAMES = os.getenv('ADMIN_USERNAMES')
 FORTUNES= [
 "It is certain",
@@ -108,7 +109,7 @@ def generate_log_message(message):
 @bot.event
 async def on_ready():
     log(f"Logged in as {bot.user}!")
-    await update_presence(discord.Status.online, "Running :D")
+    await update_presence(discord.Status.online, DEFAULT_STATUS_MESSAGE)
 
 #
 # Commands
