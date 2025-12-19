@@ -210,12 +210,39 @@ def handle_activity_change(before, after):
     before_spotify = get_spotify_activity(before.activities)
     after_spotify = get_spotify_activity(after.activities)
 
-    if after_spotify != before_spotify and isinstance(after_spotify, discord.Spotify):
+    before_playing = get_playing_activity(before.activities)
+    after_playing = get_playing_activity(after.activities)
+
+    if should_display_updated_spotify_activity(before_spotify, after_spotify):
         log(f"Status: {username} is now listening to {after_spotify.artist} - {after_spotify.title}")
+    if should_display_updated_playing_activity(before_playing, after_playing):
+        log(f"Status: {username} is now playing {after_playing.name}")
+
+def should_display_updated_playing_activity(before, after):
+    if isinstance(after, discord.Activity) is False:
+        return False
+    if before is not None:
+        if after.name != before.name:
+            return True
+    return True
+
+def should_display_updated_spotify_activity(before, after):
+    if isinstance(after, discord.Spotify) is False:
+        return False
+    if before is not None:
+        if after.title != before.title:
+            return True
+    return True
 
 def get_spotify_activity(activities):
     for activity in activities:
         if isinstance(activity, discord.Spotify):
+            return activity
+    return None
+
+def get_playing_activity(activities):
+    for activity in activities:
+        if activity.type == discord.ActivityType.playing:
             return activity
     return None
 
