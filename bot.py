@@ -75,6 +75,20 @@ async def on_ready():
     await update_presence(discord.Status.online, "Running :D")
 
 #
+# Commands
+#
+
+@bot.event
+async def on_command_error(ctx, error):
+    log(f"Command invocation threw an error: {error}")
+    await ctx.send("well that threw an error")
+    await ctx.send(random_error_message())
+
+@bot.command(name="hello")
+async def hello_command(ctx):
+    await ctx.send("Hello! I'm a bot.")  # Responds to '!hello'
+
+#
 # Activity
 #
 
