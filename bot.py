@@ -83,13 +83,17 @@ def is_admin_user(user):
     return False
 
 def log(message):
+    message_to_write = generate_log_message(message)
+    print(message_to_write)
+    with open('info.log', 'a') as file:
+        file.write(f"{message_to_write} \n")
+
+def generate_log_message(message):
     now = datetime.datetime.now()
     formatted_datetime = now.strftime("%Y-%m-%d %H:%M:%S")
     formatted_message = strip_non_ascii(message)
     message_to_write = f"{formatted_datetime} - {formatted_message}"
-    print(message_to_write)
-    with open('info.log', 'a') as file:
-        file.write(f"{message_to_write} \n")
+    return message_to_write
 
 #
 # On Connect
