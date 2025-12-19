@@ -135,6 +135,12 @@ async def say_command(ctx, message: str):
     if is_admin_user(ctx.author):
         await ctx.send(message)
 
+@bot.command(name="say_to", help="Forces the bot to send the given message to the given channel (Admins only)")
+async def say_to_command(ctx, channel_id: int, message: str):
+    if is_admin_user(ctx.author):
+        channel = await bot.fetch_channel(channel_id)
+        await channel.send(message)
+
 @bot.command(name="status", help="Changes the bot's status (Admins only)")
 async def status_command(ctx, status: str, message: str):
     if is_admin_user(ctx.author) is False:
