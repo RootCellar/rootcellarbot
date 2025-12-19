@@ -11,6 +11,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+ADMIN_USERS = os.getenv('ADMIN_USERS')
+ERROR_MESSAGES = [ "huh?", "what?", "*implodes*", "no u", "AAAAAAAAAAAAAA", "I need....a penguin plushie", "whar?", "~~sanity~~", "explode", "you wish", "bruh", "|| no ||",
+                   "I'm gonna", "Ask ChatGPT", "imagine", "yesn't", "Segmentation fault (core dumped)" ]
+
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -87,6 +91,27 @@ async def on_command_error(ctx, error):
 @bot.command(name="hello")
 async def hello_command(ctx):
     await ctx.send("Hello! I'm a bot.")  # Responds to '!hello'
+
+@bot.command(name="say")
+async def say_command(ctx, message: str):
+    if is_admin_user(ctx.author):
+        await ctx.send(message)
+
+@bot.command(name="status")
+async def status_command(ctx, status: str, message: str):
+    if is_admin_user(ctx.author) is False:
+        return
+
+    if status == "online":
+        await update_presence(discord.Status.online, message)
+    elif status == "idle":
+        await update_presence(discord.Status.idle, message)
+    elif status == "dnd":
+        await update_presence(discord.Status.do_not_disturb, message)
+    elif status == "invisible":
+        await update_presence(discord.Status.invisible, message)
+    else:
+        await ctx.send(random_error_message())
 
 #
 # Activity
