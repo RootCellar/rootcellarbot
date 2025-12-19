@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ADMIN_USERS = os.getenv('ADMIN_USERS')
+ADMIN_USERNAMES = os.getenv('ADMIN_USERNAMES')
 FORTUNES= [
 "It is certain",
 "It is decidedly so",
@@ -76,7 +76,7 @@ async def update_presence(status, message):
   await bot.change_presence(status=status, activity=game)
 
 def is_admin_user(user):
-    users = ADMIN_USERS.split(",")
+    users = ADMIN_USERNAMES.split(",")
     for name in users:
         if user.name == name:
             return True
