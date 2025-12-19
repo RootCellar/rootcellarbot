@@ -59,14 +59,14 @@ def random_error_message():
     return random.choice(ERROR_MESSAGES)
 
 def mock_string(message):
-    toRet = ""
+    to_ret = ""
     for i in range(0, len(message)):
         rand = random.randint(0, 2)
         if rand == 0:
-            toRet += message[i].upper()
+            to_ret += message[i].upper()
         else:
-            toRet += message[i].lower()
-    return toRet
+            to_ret += message[i].lower()
+    return to_ret
 
 def strip_non_ascii(text: str):
     return re.sub(r'[^\x00-\x7f]', r'?', text)
