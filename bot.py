@@ -37,6 +37,7 @@ FORTUNES= [
 ]
 ERROR_MESSAGES = [ "huh?", "what?", "*implodes*", "no u", "AAAAAAAAAAAAAA", "I need....a penguin plushie", "whar?", "~~sanity~~", "explode", "you wish", "bruh", "|| no ||",
                    "I'm gonna", "Ask ChatGPT", "imagine", "yesn't", "Segmentation fault (core dumped)" ]
+NO_PERMISSION_ERROR_MESSAGE = f"Sorry, you don't have permission to do that."
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -135,7 +136,7 @@ async def say_command(ctx, message: str):
     if is_admin_user(ctx.author):
         await ctx.send(message)
     else:
-        await ctx.reply(f"Sorry, you don't have permission to do that.")
+        await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
 
 @bot.command(name="say_to", help="Forces the bot to send the given message to the given channel (Admins only)")
 async def say_to_command(ctx, channel_id: int, message: str):
@@ -143,7 +144,7 @@ async def say_to_command(ctx, channel_id: int, message: str):
         channel = await bot.fetch_channel(channel_id)
         await channel.send(message)
     else:
-        await ctx.reply(f"Sorry, you don't have permission to do that.")
+        await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
 
 @bot.command(name="status", help="Changes the bot's status (Admins only)")
 async def status_command(ctx, status: str, message: str):
@@ -159,7 +160,7 @@ async def status_command(ctx, status: str, message: str):
     elif status == "invisible":
         await update_presence(discord.Status.invisible, message)
     else:
-        await ctx.reply(f"Sorry, you don't have permission to do that.")
+        await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
 
 
 @bot.command(name="joke", help="Drop a joke into the chat")
