@@ -71,9 +71,15 @@ def mock_string(message):
 def strip_non_ascii(text: str):
     return re.sub(r'[^\x00-\x7f]', r'?', text)
 
-async def update_presence(status, message):
-  game = discord.Game(message)
-  await bot.change_presence(status=status, activity=game)
+async def update_presence(status: discord.Status | None, message: str | None):
+    if status is None:
+        status = discord.Status.online
+
+    if message is None:
+        await bot.change_presence(status=status)
+    else:
+        game = discord.Game(message)
+        await bot.change_presence(status=status, activity=game)
 
 def is_admin_user(user):
     users = ADMIN_USERNAMES.split(",")
