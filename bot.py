@@ -1,8 +1,11 @@
 import os
 import re
+import json
 import requests
 import random
 import datetime
+
+from asyncio import Lock
 
 import discord
 from discord.ext import commands
@@ -39,6 +42,10 @@ ERROR_MESSAGES = [ "huh?", "what?", "*implodes*", "no u", "AAAAAAAAAAAAAA", "I n
                    "I'm gonna", "Ask ChatGPT", "imagine", "yesn't", "Segmentation fault (core dumped)" ]
 NO_PERMISSION_ERROR_MESSAGE = f"Sorry, you don't have permission to do that."
 
+MAIN_DATA_FILE = "main_bot_data.json"
+
+data_lock = Lock()
+
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -49,7 +56,35 @@ intents.reactions = True
 intents.expressions = True
 intents.typing = True
 
-bot = commands.Bot(command_prefix='rc!', intents=intents)
+#
+# DATA
+#
+
+def load_json_data(file_name):
+    if os.path.exists(file_name):
+        with open(file_name, 'r') as file:
+            return json.load(file)
+    return {}
+
+async def save_json_data(data, file_name):
+    async with data_lock:
+        with open(file_name, 'w') as file:
+            json.dump(data, file, indent=4)
+
+main_bot_data = load_json_data(MAIN_DATA_FILE)
+
+class CustomBot(commands.Bot):
+    async def close(self):
+        print("Saving data...")
+        await save_json_data(main_bot_data, MAIN_DATA_FILE)
+
+        await super().close()
+
+bot = CustomBot(command_prefix='rc!', intents=intents)
+
+#
+# UTIL
+#
 
 def roll_dice(num_dice: int, sides: int):
     total = 0
@@ -111,6 +146,10 @@ def generate_log_message(message):
 async def on_ready():
     log(f"Logged in as {bot.user}!")
     await update_presence(discord.Status.online, DEFAULT_STATUS_MESSAGE)
+
+@bot.event
+async def on_disconnect():
+    pass
 
 #
 # Commands
