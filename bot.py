@@ -258,6 +258,20 @@ async def doggo_command(ctx):
 
     await ctx.send(f"{url}")
 
+@bot.command(name="penguin", help="Drop a penguin photo into the chat")
+async def penguin_command(ctx):
+    async with ctx.typing():
+        # From https://github.com/samSharivker/PenguinImageAPI
+        request = requests.get("https://penguin.sjsharivker.workers.dev/api")
+        json = request.json()
+
+    item = json
+    assert item is not None
+    url = item["img"]
+    assert url is not None
+
+    await ctx.send(f"{url}")
+
 @bot.command(name="mock", help="Generate and send a string mocking the given string")
 async def mock_command(ctx, *args):
     message = ' '.join(args)
