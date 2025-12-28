@@ -199,7 +199,7 @@ async def on_command_error(ctx, error):
 
 @bot.command(name="hello", help="Says hello")
 async def hello_command(ctx):
-    await ctx.send("Hello! I'm a bot.")  # Responds to '!hello'
+    await ctx.send("Hello! I'm a bot.")
 
 @bot.command(name="say", help="Forces the bot to send the given message (Admins only)")
 async def say_command(ctx, message: str):
