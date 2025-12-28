@@ -11,6 +11,7 @@ import discord
 from discord.ext import commands
 
 from dotenv import load_dotenv
+from requests import JSONDecodeError
 
 load_dotenv()
 
@@ -108,6 +109,35 @@ def mock_string(message):
 
 def strip_non_ascii(text: str):
     return re.sub(r'[^\x00-\x7f]', r'?', text)
+
+#
+# Performs a GET fetch and returns the JSON response
+# when the GET was successful. Otherwise, returns `None`
+#
+def http_get_json_generic(url):
+    request = requests.get(url)
+
+    if request.status_code != 200:
+        log(f"Request to '{url}' returned status code {request.status_code}")
+        return None
+
+    try:
+        response_json = request.json()
+    except JSONDecodeError:
+        log(f"Request to '{url}' returned bad JSON")
+        return None
+
+    return response_json
+
+async def get_random_no():
+    response_json = http_get_json_generic("https://naas.isalman.dev/no")
+    if response_json is None:
+        return None
+
+    reason = response_json["reason"]
+    assert reason is not None
+
+    return reason
 
 async def update_presence(status: discord.Status | None, message: str | None):
     if status is None:
@@ -272,6 +302,15 @@ async def penguin_command(ctx):
     assert url is not None
 
     await ctx.send(f"{url}")
+
+@bot.command(name="no", help="Send a creative way of just saying `no`")
+async def random_no_command(ctx):
+    async with ctx.typing():
+        random_no = await get_random_no()
+
+    assert random_no is not None
+
+    await ctx.send(f"{random_no}")
 
 @bot.command(name="mock", help="Generate and send a string mocking the given string")
 async def mock_command(ctx, *args):
