@@ -338,7 +338,6 @@ async def choose_random_command(ctx, *args):
 
 @bot.command(name="fortune", help="Ask a question and learn your fortune")
 async def fortune_command(ctx, *args):
-    joined = ' '.join(args)
     fortune = random.choice(FORTUNES)
     await ctx.send(fortune)
 
