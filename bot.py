@@ -411,5 +411,7 @@ def compute_printed_user(user):
 #
 
 token = os.getenv('DISCORD_TOKEN')
+if token is None:
+    raise ValueError('DISCORD_TOKEN environment variable not set')
 
 bot.run(token)
