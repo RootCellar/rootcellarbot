@@ -14,9 +14,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DEFAULT_STATUS_MESSAGE = os.getenv('DEFAULT_STATUS_MESSAGE')
-ADMIN_USERNAMES = os.getenv('ADMIN_USERNAMES')
 COMMAND_PREFIX = os.getenv('COMMAND_PREFIX', default = '!')
+DEFAULT_STATUS_MESSAGE = os.getenv('DEFAULT_STATUS_MESSAGE', default = '')
+ADMIN_USERNAMES = os.getenv('ADMIN_USERNAMES', default = '')
 FORTUNES= [
 "It is certain",
 "It is decidedly so",
