@@ -16,6 +16,7 @@ load_dotenv()
 
 DEFAULT_STATUS_MESSAGE = os.getenv('DEFAULT_STATUS_MESSAGE')
 ADMIN_USERNAMES = os.getenv('ADMIN_USERNAMES')
+COMMAND_PREFIX = os.getenv('COMMAND_PREFIX', default = '!')
 FORTUNES= [
 "It is certain",
 "It is decidedly so",
@@ -80,7 +81,7 @@ class CustomBot(commands.Bot):
 
         await super().close()
 
-bot = CustomBot(command_prefix='rc!', intents=intents)
+bot = CustomBot(command_prefix=COMMAND_PREFIX, intents=intents)
 
 #
 # UTIL
