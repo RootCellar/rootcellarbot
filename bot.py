@@ -386,6 +386,19 @@ async def fortune_command(ctx, *args):
     fortune = random.choice(FORTUNES)
     await ctx.send(fortune)
 
+@bot.command(name="game", help="EXPERIMENT!! DOES NOT DO ANYTHING OF VALUE")
+async def game_command(ctx):
+
+    # Just to give Pycharm a hint for the type
+    # so it helps me write code :)
+    assert isinstance(ctx, commands.Context)
+
+    key = f"{ctx.channel.id}.{ctx.author.id}"
+    value = random.choice(range(0, 100))
+    dictionary_set(main_bot_data, key, value)
+
+    await ctx.send(f"{dictionary_get(main_bot_data, key)}")
+
 #
 # Activity
 #
