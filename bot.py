@@ -414,20 +414,23 @@ def get_playing_activity(activities):
 async def on_message(message):
     # Log all messages
     username = compute_printed_user(message.author)
-
     log(f"Message: [{compute_printed_channel_for_message(message)}] {username} {message.content}")
 
-    # Only handle messages from other users
+    # Only handle messages from *other* users
     if message.author == bot.user:
         return
 
+    # Stop if the message was from a bot
     if message.author.bot is True:
         return
+
+    # Process user messages
 
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
 
-    # Required to use discord.py builtin command processing
+    # Handle commands
+    # Explicit call required in order to use discord.py builtin command processing
     await bot.process_commands(message)
 
 def compute_printed_channel_for_message(message):
