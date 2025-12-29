@@ -73,6 +73,51 @@ async def save_json_data(data, file_name):
         with open(file_name, 'w') as file:
             json.dump(data, file, indent=4)
 
+def dictionary_get(dictionary: dict, key: str):
+    sub_keys = key.split('.')
+    count = len(sub_keys)
+
+    curr_dict = dictionary
+
+    for i in range(0, count):
+        is_last = i == count - 1
+        sub_key = str(sub_keys[i])
+
+        # If it's not the last key after the split,
+        # we're fetching / creating a sub-dictionary
+        if is_last is False:
+            sub_dict = curr_dict.get(sub_key)
+            if sub_dict is None:
+                curr_dict[sub_key] = {}
+            curr_dict = curr_dict.get(sub_key)
+        # Otherwise, return the value
+        else:
+            return curr_dict.get(sub_key)
+
+    return None
+
+def dictionary_set(dictionary: dict, key: str, value):
+    sub_keys = key.split('.')
+    count = len(sub_keys)
+
+    curr_dict = dictionary
+
+    for i in range(0, count):
+        is_last = i == count - 1
+        sub_key = str(sub_keys[i])
+
+        # If it's not the last key after the split,
+        # we're fetching / creating a sub-dictionary
+        if is_last is False:
+            sub_dict = curr_dict.get(sub_key)
+            if sub_dict is None:
+                curr_dict[sub_key] = {}
+            curr_dict = curr_dict.get(sub_key)
+        # Otherwise, set the value
+        else:
+            curr_dict[sub_key] = value
+            return
+
 main_bot_data = load_json_data(MAIN_DATA_FILE)
 
 class CustomBot(commands.Bot):
