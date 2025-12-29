@@ -236,6 +236,7 @@ async def on_command_error(ctx, error):
     log(f"Command invocation threw an error: {error}")
 
     assert isinstance(ctx, commands.Context)
+    assert isinstance(error, commands.CommandError)
 
     await ctx.reply(f"Command Invocation Failed: {error}")
 
