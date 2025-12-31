@@ -73,50 +73,44 @@ async def save_json_data(data, file_name):
         with open(file_name, 'w') as file:
             json.dump(data, file, indent=4)
 
-def dictionary_get(dictionary: dict, key: str):
-    sub_keys = key.split('.')
-    count = len(sub_keys)
-
+def ensure_path_exists_and_get_dictionary(dictionary: dict, sub_keys: list[str]):
     curr_dict = dictionary
 
-    for i in range(0, count):
-        is_last = i == count - 1
-        sub_key = str(sub_keys[i])
+    for sub_key in sub_keys:
+        sub_dict = curr_dict.get(sub_key)
 
-        # If it's not the last key after the split,
-        # we're fetching / creating a sub-dictionary
-        if is_last is False:
-            sub_dict = curr_dict.get(sub_key)
-            if sub_dict is None:
-                curr_dict[sub_key] = {}
-            curr_dict = curr_dict.get(sub_key)
-        # Otherwise, return the value
-        else:
-            return curr_dict.get(sub_key)
+        if sub_dict is None:
+            curr_dict[sub_key] = { }
+        elif isinstance(sub_dict, dict) is False:
+            raise TypeError(f"Expected a dictionary, but found a non-dictionary at {".".join(sub_keys)}")
 
-    return None
+        curr_dict = curr_dict.get(sub_key)
+
+    return curr_dict
+
+def get_sub_dict_and_leaf_node_key(dictionary, key):
+    split_key = key.split('.')
+    dict_path = split_key[0:-1]
+    leaf_key = split_key[-1]
+    sub_dict = ensure_path_exists_and_get_dictionary(dictionary, dict_path)
+    return sub_dict, leaf_key
+
+def dictionary_get(dictionary: dict, key: str):
+    # Type Hint
+    assert isinstance(dictionary, dict) is True
+
+    sub_dict, leaf_key = get_sub_dict_and_leaf_node_key(dictionary, key)
+    return sub_dict.get(leaf_key)
 
 def dictionary_set(dictionary: dict, key: str, value):
-    sub_keys = key.split('.')
-    count = len(sub_keys)
+    # Type Hint
+    assert isinstance(dictionary, dict) is True
 
-    curr_dict = dictionary
-
-    for i in range(0, count):
-        is_last = i == count - 1
-        sub_key = str(sub_keys[i])
-
-        # If it's not the last key after the split,
-        # we're fetching / creating a sub-dictionary
-        if is_last is False:
-            sub_dict = curr_dict.get(sub_key)
-            if sub_dict is None:
-                curr_dict[sub_key] = {}
-            curr_dict = curr_dict.get(sub_key)
-        # Otherwise, set the value
-        else:
-            curr_dict[sub_key] = value
-            return
+    sub_dict, leaf_key = get_sub_dict_and_leaf_node_key(dictionary, key)
+    if isinstance(sub_dict.get(leaf_key), dict) is True:
+        raise TypeError(f"Expected a non-dictionary, but found a dictionary at {key}")
+    else:
+        sub_dict[leaf_key] = value
 
 main_bot_data = load_json_data(MAIN_DATA_FILE)
 
