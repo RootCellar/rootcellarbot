@@ -76,13 +76,15 @@ async def save_json_data(data, file_name):
 def ensure_path_exists_and_get_dictionary(dictionary: dict, sub_keys: list[str]):
     curr_dict = dictionary
 
-    for sub_key in sub_keys:
+    for i in range(0, len(sub_keys)):
+        sub_key = sub_keys[i]
         sub_dict = curr_dict.get(sub_key)
 
         if sub_dict is None:
             curr_dict[sub_key] = { }
         elif isinstance(sub_dict, dict) is False:
-            raise TypeError(f"Expected a dictionary, but found a non-dictionary at {".".join(sub_keys)}")
+            formatted_key = ".".join(sub_keys[:i + 1])
+            raise TypeError(f"Expected a dictionary, but found a non-dictionary at {formatted_key}")
 
         curr_dict = curr_dict.get(sub_key)
 
