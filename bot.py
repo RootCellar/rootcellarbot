@@ -507,8 +507,9 @@ def compute_printed_user(user):
 # RUN
 #
 
-token = os.getenv('DISCORD_TOKEN')
-if token is None:
-    raise ValueError('DISCORD_TOKEN environment variable not set')
+if __name__ == "__main__":
+    token = os.getenv('DISCORD_TOKEN')
+    if token is None:
+        raise ValueError('DISCORD_TOKEN environment variable not set')
 
-bot.run(token)
+    bot.run(token)
