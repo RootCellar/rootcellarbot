@@ -97,14 +97,16 @@ def get_sub_dict_and_leaf_node_key(dictionary, key):
 
 def dictionary_get(dictionary: dict, key: str):
     # Type Hint
-    assert isinstance(dictionary, dict) is True
+    if isinstance(dictionary, dict) is False:
+        raise TypeError("Expected a dictionary")
 
     sub_dict, leaf_key = get_sub_dict_and_leaf_node_key(dictionary, key)
     return sub_dict.get(leaf_key)
 
 def dictionary_set(dictionary: dict, key: str, value):
     # Type Hint
-    assert isinstance(dictionary, dict) is True
+    if isinstance(dictionary, dict) is False:
+        raise TypeError("Expected a dictionary")
 
     sub_dict, leaf_key = get_sub_dict_and_leaf_node_key(dictionary, key)
     if isinstance(sub_dict.get(leaf_key), dict) is True:
@@ -174,7 +176,8 @@ async def get_random_no():
         return None
 
     reason = response_json["reason"]
-    assert reason is not None
+    if reason is None:
+        raise ValueError("'reason' is not set")
 
     return reason
 
@@ -229,8 +232,10 @@ async def on_disconnect():
 async def on_command_error(ctx, error):
     log(f"Command invocation threw an error: {error}")
 
-    assert isinstance(ctx, commands.Context)
-    assert isinstance(error, commands.CommandError)
+    if not isinstance(ctx, commands.Context):
+        raise ValueError("ctx is not a Context")
+    if not isinstance(error, commands.CommandError):
+        raise ValueError("error is not a CommandError")
 
     await ctx.reply(f"Command Invocation Failed: {error}")
 
@@ -279,7 +284,8 @@ async def joke_command(ctx):
         request = requests.get("https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit")
         joke = request.json()
 
-    assert joke["error"] == False
+    if joke["error"]:
+        raise ValueError("'error' is set")
 
     if joke["type"] == "twopart":
         setup = joke["setup"]
@@ -296,7 +302,8 @@ async def quote_command(ctx):
         quotes = request.json()
 
     quote = quotes[0]
-    assert quote is not None
+    if quote is None:
+        raise ValueError("'quote' is not set")
 
     line = quote["q"]
     author = quote["a"]
@@ -310,9 +317,11 @@ async def kitty_command(ctx):
         json = request.json()
 
     item = json[0]
-    assert item is not None
+    if item is None:
+        raise ValueError("'item' is not set")
     url = item["url"]
-    assert url is not None
+    if url is None:
+        raise ValueError("'url' is not set")
 
     await ctx.send(f"{url}")
 
@@ -323,9 +332,11 @@ async def doggo_command(ctx):
         json = request.json()
 
     item = json[0]
-    assert item is not None
+    if item is None:
+        raise ValueError("'item' is not set")
     url = item["url"]
-    assert url is not None
+    if url is None:
+        raise ValueError("'url' is not set")
 
     await ctx.send(f"{url}")
 
@@ -337,9 +348,11 @@ async def penguin_command(ctx):
         json = request.json()
 
     item = json
-    assert item is not None
+    if item is None:
+        raise ValueError("'item' is not set")
     url = item["img"]
-    assert url is not None
+    if url is None:
+        raise ValueError("'url' is not set")
 
     await ctx.send(f"{url}")
 
@@ -348,7 +361,8 @@ async def random_no_command(ctx):
     async with ctx.typing():
         random_no = await get_random_no()
 
-    assert random_no is not None
+    if random_no is None:
+        raise ValueError("'random_no' is not set")
 
     await ctx.send(f"{random_no}")
 
