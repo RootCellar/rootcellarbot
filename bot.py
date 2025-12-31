@@ -16,6 +16,7 @@ from requests import JSONDecodeError
 load_dotenv()
 
 COMMAND_PREFIX = os.getenv('COMMAND_PREFIX', default = '!')
+DEFAULT_STATUS = os.getenv('DEFAULT_STATUS', default = '')
 DEFAULT_STATUS_MESSAGE = os.getenv('DEFAULT_STATUS_MESSAGE', default = '')
 ADMIN_USERNAMES = os.getenv('ADMIN_USERNAMES', default = '')
 FORTUNES= [
@@ -183,6 +184,19 @@ async def get_random_no():
 
     return reason
 
+def status_str_to_discord_status(status):
+    if status == "online":
+        discord_status = discord.Status.online
+    elif status == "idle":
+        discord_status = discord.Status.idle
+    elif status == "dnd":
+        discord_status = discord.Status.do_not_disturb
+    elif status == "invisible":
+        discord_status = discord.Status.invisible
+    else:
+        discord_status = None
+    return discord_status
+
 async def update_presence(status: discord.Status | None, message: str | None):
     if status is None:
         status = discord.Status.online
@@ -220,7 +234,9 @@ def generate_log_message(message):
 @bot.event
 async def on_ready():
     log(f"Logged in as {bot.user}!")
-    await update_presence(discord.Status.online, DEFAULT_STATUS_MESSAGE)
+
+    status = status_str_to_discord_status(DEFAULT_STATUS)
+    await update_presence(status, DEFAULT_STATUS_MESSAGE)
 
 @bot.event
 async def on_disconnect():
@@ -266,19 +282,12 @@ async def say_to_command(ctx, channel_id: int, message: str):
 @bot.command(name="status", help="Changes the bot's status (Admins only)")
 async def status_command(ctx, status: str, message: str):
     if is_admin_user(ctx.author) is False:
+        await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
         return
 
-    if status == "online":
-        await update_presence(discord.Status.online, message)
-    elif status == "idle":
-        await update_presence(discord.Status.idle, message)
-    elif status == "dnd":
-        await update_presence(discord.Status.do_not_disturb, message)
-    elif status == "invisible":
-        await update_presence(discord.Status.invisible, message)
-    else:
-        await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
+    discord_status = status_str_to_discord_status(status)
 
+    await update_presence(discord_status, message)
 
 @bot.command(name="joke", help="Drop a joke into the chat")
 async def joke_command(ctx):
