@@ -264,6 +264,21 @@ async def on_command_error(ctx, error):
 async def hello_command(ctx):
     await ctx.send("Hello! I'm a bot.")
 
+@bot.command(name="debug", help="(Admin-only) Enable/Disable specific debug channels)")
+async def debug_command(ctx, name: str, value: bool):
+
+    # Type hint
+    assert isinstance(ctx, commands.Context)
+
+    if '.' in name:
+        await ctx.reply("Channel name cannot contain dots")
+        return
+
+    key = f"debug.type.{name}"
+    dictionary_set(main_bot_data, key, value)
+
+    await ctx.reply(f"Set `{key}` to `{value}`")
+
 @bot.command(name="say", help="Forces the bot to send the given message (Admins only)")
 async def say_command(ctx, message: str):
     if is_admin_user(ctx.author):
