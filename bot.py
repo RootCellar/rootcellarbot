@@ -370,8 +370,7 @@ async def status_command(ctx, status: str, message: str):
 @bot.command(name="joke", help="Drop a joke into the chat")
 async def joke_command(ctx):
     async with ctx.typing():
-        request = requests.get("https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit")
-        joke = request.json()
+        joke = http_get_json_generic("https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit")
 
     if joke["error"]:
         raise ValueError("'error' is set")
@@ -387,8 +386,7 @@ async def joke_command(ctx):
 @bot.command(name="quote", help="Drop a wise quote into the chat")
 async def quote_command(ctx):
     async with ctx.typing():
-        request = requests.get("https://zenquotes.io/api/random")
-        quotes = request.json()
+        quotes = http_get_json_generic("https://zenquotes.io/api/random")
 
     quote = quotes[0]
     if quote is None:
@@ -402,8 +400,7 @@ async def quote_command(ctx):
 @bot.command(name="kitty", help="Drop a cute kitty photo into the chat")
 async def kitty_command(ctx):
     async with ctx.typing():
-        request = requests.get("https://api.thecatapi.com/v1/images/search")
-        json = request.json()
+        json = http_get_json_generic("https://api.thecatapi.com/v1/images/search")
 
     item = json[0]
     if item is None:
@@ -417,8 +414,7 @@ async def kitty_command(ctx):
 @bot.command(name="doggo", help="Drop a cute dog photo into the chat")
 async def doggo_command(ctx):
     async with ctx.typing():
-        request = requests.get("https://api.thedogapi.com/v1/images/search")
-        json = request.json()
+        json = http_get_json_generic("https://api.thedogapi.com/v1/images/search")
 
     item = json[0]
     if item is None:
@@ -433,10 +429,8 @@ async def doggo_command(ctx):
 async def penguin_command(ctx):
     async with ctx.typing():
         # From https://github.com/samSharivker/PenguinImageAPI
-        request = requests.get("https://penguin.sjsharivker.workers.dev/api")
-        json = request.json()
+        item = http_get_json_generic("https://penguin.sjsharivker.workers.dev/api")
 
-    item = json
     if item is None:
         raise ValueError("'item' is not set")
     url = item["img"]
