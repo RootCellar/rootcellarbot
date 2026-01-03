@@ -19,6 +19,9 @@ COMMAND_PREFIX = os.getenv('COMMAND_PREFIX', default = '!')
 DEFAULT_STATUS = os.getenv('DEFAULT_STATUS', default = '')
 DEFAULT_STATUS_MESSAGE = os.getenv('DEFAULT_STATUS_MESSAGE', default = '')
 ADMIN_USERNAMES = os.getenv('ADMIN_USERNAMES', default = '')
+
+DEBUG_CHANNEL_DICT_PATH = "debug.type"
+
 FORTUNES= [
 "It is certain",
 "It is decidedly so",
@@ -41,9 +44,11 @@ FORTUNES= [
 "Outlook not so good",
 "Very doubtful"
 ]
+
 ERROR_MESSAGES = [ "huh?", "what?", "*implodes*", "no u", "AAAAAAAAAAAAAA", "I need....a penguin plushie", "whar?", "~~sanity~~", "explode", "you wish", "bruh", "|| no ||",
                    "I'm gonna", "Ask ChatGPT", "imagine", "yesn't", "Segmentation fault (core dumped)" ]
 NO_PERMISSION_ERROR_MESSAGE = f"Sorry, you don't have permission to do that."
+
 
 MAIN_DATA_FILE = "main_bot_data.json"
 
@@ -214,6 +219,25 @@ def is_admin_user(user):
             return True
     return False
 
+
+def get_debug_channel_value_path(name: str):
+    return f"{DEBUG_CHANNEL_DICT_PATH}.{name}"
+
+def should_log_debug_channel(channel: str):
+    key = get_debug_channel_value_path(channel)
+    value = dictionary_get(main_bot_data, key)
+
+    if value is True:
+        return True
+    if value is None:
+        dictionary_set(main_bot_data, key, False)
+
+    return False
+
+def debug(channel: str, message: str):
+    if should_log_debug_channel(channel) is True:
+        log(f"[DEBUG] {channel}: {message}")
+
 def log(message):
     message_to_write = generate_log_message(message)
     print(message_to_write)
@@ -274,10 +298,31 @@ async def debug_command(ctx, name: str, value: bool):
         await ctx.reply("Channel name cannot contain dots")
         return
 
-    key = f"debug.type.{name}"
+    key = get_debug_channel_value_path(name)
     dictionary_set(main_bot_data, key, value)
 
     await ctx.reply(f"Set `{key}` to `{value}`")
+
+@bot.command(name="debugged", help="(Admin-only) Show debug channel values)")
+async def debugged_command(ctx):
+
+    # Type hint
+    assert isinstance(ctx, commands.Context)
+
+    debug_dict = dictionary_get(main_bot_data, DEBUG_CHANNEL_DICT_PATH)
+    if isinstance(debug_dict, dict) is False:
+        await ctx.reply("Debug dictionary is not a dictionary!")
+        raise TypeError("Debug dictionary is not a dictionary!")
+
+    keys = debug_dict.keys()
+    lines = []
+
+    for key in keys:
+        lines.append(f"{key} = {debug_dict[key]}")
+
+    string_to_send = ", ".join(lines)
+
+    await ctx.reply(f"```{string_to_send}```")
 
 @bot.command(name="say", help="(Admin-only) Forces the bot to send the given message")
 async def say_command(ctx, message: str):
