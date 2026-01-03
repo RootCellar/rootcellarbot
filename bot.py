@@ -164,6 +164,7 @@ def strip_non_ascii(text: str):
 # when the GET was successful. Otherwise, returns `None`
 #
 def http_get_json_generic(url):
+    debug("http", f"JSON GET {url}")
     request = requests.get(url)
 
     if request.status_code != 200 and request.status_code != 201:
