@@ -279,14 +279,14 @@ async def debug_command(ctx, name: str, value: bool):
 
     await ctx.reply(f"Set `{key}` to `{value}`")
 
-@bot.command(name="say", help="Forces the bot to send the given message (Admins only)")
+@bot.command(name="say", help="(Admin-only) Forces the bot to send the given message")
 async def say_command(ctx, message: str):
     if is_admin_user(ctx.author):
         await ctx.send(message)
     else:
         await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
 
-@bot.command(name="say_to", help="Forces the bot to send the given message to the given channel (Admins only)")
+@bot.command(name="say_to", help="(Admin-only) Forces the bot to send the given message to the given channel")
 async def say_to_command(ctx, channel_id: int, message: str):
     if is_admin_user(ctx.author):
         channel = await bot.fetch_channel(channel_id)
@@ -294,7 +294,7 @@ async def say_to_command(ctx, channel_id: int, message: str):
     else:
         await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
 
-@bot.command(name="status", help="Changes the bot's status (Admins only)")
+@bot.command(name="status", help="(Admin-only) Changes the bot's status")
 async def status_command(ctx, status: str, message: str):
     if is_admin_user(ctx.author) is False:
         await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
