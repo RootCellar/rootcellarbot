@@ -258,6 +258,7 @@ def generate_log_message(message):
 @bot.event
 async def on_ready():
     log(f"Logged in as {bot.user}!")
+    debug("startup", f"Logged in as {bot.user}")
 
     status = status_str_to_discord_status(DEFAULT_STATUS)
     await update_presence(status, DEFAULT_STATUS_MESSAGE)
