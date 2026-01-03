@@ -290,6 +290,9 @@ async def hello_command(ctx):
 
 @bot.command(name="debug", help="(Admin-only) Enable/Disable specific debug channels)")
 async def debug_command(ctx, name: str, value: bool):
+    if is_admin_user(ctx.author) is False:
+        await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
+        return
 
     # Type hint
     assert isinstance(ctx, commands.Context)
@@ -305,6 +308,9 @@ async def debug_command(ctx, name: str, value: bool):
 
 @bot.command(name="debugged", help="(Admin-only) Show debug channel values)")
 async def debugged_command(ctx):
+    if is_admin_user(ctx.author) is False:
+        await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
+        return
 
     # Type hint
     assert isinstance(ctx, commands.Context)
