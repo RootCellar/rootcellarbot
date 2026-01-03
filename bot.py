@@ -223,14 +223,22 @@ def is_admin_user(user):
 def get_debug_channel_value_path(name: str):
     return f"{DEBUG_CHANNEL_DICT_PATH}.{name}"
 
-def should_log_debug_channel(channel: str):
+def get_debug_channel_value(channel: str):
     key = get_debug_channel_value_path(channel)
     value = dictionary_get(main_bot_data, key)
+    return value
+
+def set_debug_channel_value(channel: str, value: bool):
+    key = get_debug_channel_value_path(channel)
+    dictionary_set(main_bot_data, key, value)
+
+def should_log_debug_channel(channel: str):
+    value = get_debug_channel_value(channel)
 
     if value is True:
         return True
     if value is None:
-        dictionary_set(main_bot_data, key, False)
+        set_debug_channel_value(channel, False)
 
     return False
 
@@ -302,9 +310,9 @@ async def debug_command(ctx, name: str, value: bool):
         await ctx.reply("Channel name cannot contain dots")
         return
 
-    key = get_debug_channel_value_path(name)
-    dictionary_set(main_bot_data, key, value)
+    set_debug_channel_value(name, value)
 
+    key = get_debug_channel_value_path(name)
     await ctx.reply(f"Set `{key}` to `{value}`")
 
 @bot.command(name="debugged", help="(Admin-only) Show debug channel values)")
