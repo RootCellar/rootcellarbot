@@ -123,6 +123,7 @@ def dictionary_set(dictionary: dict, key: str, value):
         sub_dict[leaf_key] = value
 
 main_bot_data = load_json_data(MAIN_DATA_FILE)
+debug_channel_dict = {}
 
 class CustomBot(commands.Bot):
     async def close(self):
@@ -225,11 +226,11 @@ def get_debug_channel_value_path(name: str):
     return f"{DEBUG_CHANNEL_DICT_PATH}.{name}"
 
 def get_debug_channel_value(channel: str):
-    key = get_debug_channel_value_path(channel)
-    value = dictionary_get(main_bot_data, key)
+    value = debug_channel_dict.get(channel)
     return value
 
 def set_debug_channel_value(channel: str, value: bool):
+    debug_channel_dict[channel] = value
     key = get_debug_channel_value_path(channel)
     dictionary_set(main_bot_data, key, value)
 
@@ -269,6 +270,13 @@ def generate_log_message(message):
 
 @bot.event
 async def on_ready():
+    log("Populating data...")
+
+    debug_dict = dictionary_get(main_bot_data, DEBUG_CHANNEL_DICT_PATH)
+    for key in debug_dict.keys():
+        value = debug_dict[key]
+        debug_channel_dict[key] = value
+
     log(f"Logged in as {bot.user}!")
     debug("startup", f"Logged in as {bot.user}")
 
@@ -328,16 +336,15 @@ async def debugged_command(ctx):
     # Type hint
     assert isinstance(ctx, commands.Context)
 
-    debug_dict = dictionary_get(main_bot_data, DEBUG_CHANNEL_DICT_PATH)
-    if isinstance(debug_dict, dict) is False:
+    if isinstance(debug_channel_dict, dict) is False:
         await ctx.reply("Debug dictionary is not a dictionary!")
         raise TypeError("Debug dictionary is not a dictionary!")
 
-    keys = debug_dict.keys()
+    keys = debug_channel_dict.keys()
     lines = []
 
     for key in keys:
-        lines.append(f"{key} = {debug_dict[key]}")
+        lines.append(f"{key} = {debug_channel_dict[key]}")
 
     string_to_send = ", ".join(lines)
 
