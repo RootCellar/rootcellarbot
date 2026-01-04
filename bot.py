@@ -122,18 +122,16 @@ class JsonDictionary(object):
         return sub_dict, leaf_key
 
     def dictionary_get(self, key: str):
-        self.print_debug(f"dictionary_get: {key}")
-
         # Type Hint
         if isinstance(self.dictionary, dict) is False:
             raise TypeError("Expected a dictionary")
 
         sub_dict, leaf_key = self.get_sub_dict_and_leaf_node_key(key)
-        return sub_dict.get(leaf_key)
+        value = sub_dict.get(leaf_key)
+        self.print_debug(f"dictionary_get: '{key}': '{value}'")
+        return value
 
     def dictionary_set(self, key: str, value):
-        self.print_debug(f"dictionary_set: {key}")
-
         # Type Hint
         if isinstance(self.dictionary, dict) is False:
             raise TypeError("Expected a dictionary")
@@ -143,6 +141,7 @@ class JsonDictionary(object):
             raise TypeError(f"Expected a non-dictionary, but found a dictionary at {key}")
         else:
             sub_dict[leaf_key] = value
+            self.print_debug(f"dictionary_set: '{key}' to '{value}'")
 
 main_bot_data_json = load_json_data(MAIN_DATA_FILE)
 main_bot_data = JsonDictionary(name = "main_data", dictionary = main_bot_data_json)
