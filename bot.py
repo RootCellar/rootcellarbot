@@ -528,6 +528,25 @@ async def hangman_command(ctx, word: str):
 
     await ctx.reply("Starting a game of hangman!")
 
+@bot.command(name="hangman_channel", help="Start a game of hangman in another channel")
+async def hangman_command(ctx, channel: int, word: str):
+    async with ctx.typing():
+        word = word.lower()
+        guesses = 4
+        channel = await bot.fetch_channel(channel)
+        if channel is None:
+            ctx.reply("Could not find that channel.")
+            return
+        base_key = f"hangman.{channel.id}"
+        main_bot_data.dictionary_set(f"{base_key}.word", word)
+        main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
+        main_bot_data.dictionary_set(f"{base_key}.guessed", [])
+        await asyncio.sleep(1)
+
+    await channel.send("Starting a game of hangman!")
+    word_to_show = generate_hangman_current_word(word, [])
+    await channel.send(f"`{word_to_show}` \nIncorrect Guesses Remaining: {guesses}")
+
 @bot.command(name="letter", help="Guess a letter for hangman")
 async def game_command(ctx, letter: str):
     if len(letter) != 1 or letter.isalnum() is False:
