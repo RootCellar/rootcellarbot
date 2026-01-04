@@ -79,56 +79,80 @@ async def save_json_data(data, file_name):
         with open(file_name, 'w') as file:
             json.dump(data, file, indent=4)
 
-def ensure_path_exists_and_get_dictionary(dictionary: dict, sub_keys: list[str]):
-    curr_dict = dictionary
+class JsonDictionary(object):
+    def __init__(self, name: str = "unnamed", dictionary = None):
+        if dictionary is None:
+            dictionary = dict()
 
-    for i in range(0, len(sub_keys)):
-        sub_key = sub_keys[i]
-        sub_dict = curr_dict.get(sub_key)
+        self.name = name
+        self.dictionary = dictionary
 
-        if sub_dict is None:
-            curr_dict[sub_key] = { }
-        elif isinstance(sub_dict, dict) is False:
-            formatted_key = ".".join(sub_keys[:i + 1])
-            raise TypeError(f"Expected a dictionary, but found a non-dictionary at {formatted_key}")
+    def get_string_prefix(self):
+        return f"<JsonDictionary {self.name}>"
 
-        curr_dict = curr_dict.get(sub_key)
+    def print_debug(self, message: str):
+        debug("dictionary", f"{self.get_string_prefix()} {message}")
 
-    return curr_dict
+    def get_dictionary(self):
+        return self.dictionary
 
-def get_sub_dict_and_leaf_node_key(dictionary, key):
-    split_key = key.split('.')
-    dict_path = split_key[0:-1]
-    leaf_key = split_key[-1]
-    sub_dict = ensure_path_exists_and_get_dictionary(dictionary, dict_path)
-    return sub_dict, leaf_key
+    def ensure_path_exists_and_get_dictionary(self, sub_keys: list[str]):
+        curr_dict = self.dictionary
 
-def dictionary_get(dictionary: dict, key: str):
-    # Type Hint
-    if isinstance(dictionary, dict) is False:
-        raise TypeError("Expected a dictionary")
+        for i in range(0, len(sub_keys)):
+            sub_key = sub_keys[i]
+            sub_dict = curr_dict.get(sub_key)
 
-    sub_dict, leaf_key = get_sub_dict_and_leaf_node_key(dictionary, key)
-    return sub_dict.get(leaf_key)
+            if sub_dict is None:
+                curr_dict[sub_key] = { }
+            elif isinstance(sub_dict, dict) is False:
+                formatted_key = ".".join(sub_keys[:i + 1])
+                raise TypeError(f"Expected a dictionary, but found a non-dictionary at {formatted_key}")
 
-def dictionary_set(dictionary: dict, key: str, value):
-    # Type Hint
-    if isinstance(dictionary, dict) is False:
-        raise TypeError("Expected a dictionary")
+            curr_dict = curr_dict.get(sub_key)
 
-    sub_dict, leaf_key = get_sub_dict_and_leaf_node_key(dictionary, key)
-    if isinstance(sub_dict.get(leaf_key), dict) is True:
-        raise TypeError(f"Expected a non-dictionary, but found a dictionary at {key}")
-    else:
-        sub_dict[leaf_key] = value
+        return curr_dict
 
-main_bot_data = load_json_data(MAIN_DATA_FILE)
+    def get_sub_dict_and_leaf_node_key(self, key):
+        split_key = key.split('.')
+        dict_path = split_key[0:-1]
+        leaf_key = split_key[-1]
+        self.print_debug(f"dict_path: {dict_path}, leaf_key: {leaf_key}")
+        sub_dict = self.ensure_path_exists_and_get_dictionary(dict_path)
+        return sub_dict, leaf_key
+
+    def dictionary_get(self, key: str):
+        self.print_debug(f"dictionary_get: {key}")
+
+        # Type Hint
+        if isinstance(self.dictionary, dict) is False:
+            raise TypeError("Expected a dictionary")
+
+        sub_dict, leaf_key = self.get_sub_dict_and_leaf_node_key(key)
+        return sub_dict.get(leaf_key)
+
+    def dictionary_set(self, key: str, value):
+        self.print_debug(f"dictionary_set: {key}")
+
+        # Type Hint
+        if isinstance(self.dictionary, dict) is False:
+            raise TypeError("Expected a dictionary")
+
+        sub_dict, leaf_key = self.get_sub_dict_and_leaf_node_key(key)
+        if isinstance(sub_dict.get(leaf_key), dict) is True:
+            raise TypeError(f"Expected a non-dictionary, but found a dictionary at {key}")
+        else:
+            sub_dict[leaf_key] = value
+
+main_bot_data_json = load_json_data(MAIN_DATA_FILE)
+main_bot_data = JsonDictionary(name = "main_data", dictionary = main_bot_data_json)
+
 debug_channel_dict = {}
 
 class CustomBot(commands.Bot):
     async def close(self):
         print("Saving data...")
-        await save_json_data(main_bot_data, MAIN_DATA_FILE)
+        await save_json_data(main_bot_data.get_dictionary(), MAIN_DATA_FILE)
 
         await super().close()
 
@@ -232,7 +256,7 @@ def get_debug_channel_value(channel: str):
 def set_debug_channel_value(channel: str, value: bool):
     debug_channel_dict[channel] = value
     key = get_debug_channel_value_path(channel)
-    dictionary_set(main_bot_data, key, value)
+    main_bot_data.dictionary_set(key, value)
 
 def should_log_debug_channel(channel: str):
     value = get_debug_channel_value(channel)
@@ -272,7 +296,7 @@ def generate_log_message(message):
 async def on_ready():
     log("Populating data...")
 
-    debug_dict = dictionary_get(main_bot_data, DEBUG_CHANNEL_DICT_PATH)
+    debug_dict = main_bot_data.dictionary_get(DEBUG_CHANNEL_DICT_PATH)
     for key in debug_dict.keys():
         value = debug_dict[key]
         debug_channel_dict[key] = value
@@ -495,9 +519,9 @@ async def game_command(ctx):
 
     key = f"{ctx.channel.id}.{ctx.author.id}"
     value = random.choice(range(0, 100))
-    dictionary_set(main_bot_data, key, value)
+    main_bot_data.dictionary_set(key, value)
 
-    await ctx.send(f"{dictionary_get(main_bot_data, key)}")
+    await ctx.send(f"{main_bot_data.dictionary_get(key)}")
 
 #
 # Activity
