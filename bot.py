@@ -611,8 +611,8 @@ def generate_hangman_current_word(word, guessed):
 async def wordle_channel_command(ctx, channel: int, word: str):
     async with ctx.typing():
         word = word.lower()
-        length = len(word) + 1
-        guesses = length
+        length = len(word)
+        guesses = length + 1
         channel = await bot.fetch_channel(channel)
         if channel is None:
             ctx.reply("Could not find that channel.")
