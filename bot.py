@@ -607,6 +607,74 @@ def generate_hangman_current_word(word, guessed):
             word_to_show = word_to_show.replace(character, "_")
     return word_to_show
 
+@bot.command(name="wordle_channel", help="Start a game of wordle in another channel")
+async def wordle_channel_command(ctx, channel: int, word: str):
+    async with ctx.typing():
+        word = word.lower()
+        length = len(word)
+        guesses = length
+        channel = await bot.fetch_channel(channel)
+        if channel is None:
+            ctx.reply("Could not find that channel.")
+            return
+        base_key = f"wordle.{channel.id}"
+        main_bot_data.dictionary_set(f"{base_key}.word", word)
+        main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
+        await asyncio.sleep(1)
+
+    await channel.send("Starting a game of wordle!")
+    await channel.send(f"`{length}` letters... \nWhat is it?")
+    await ctx.reply("Done!")
+
+@bot.command(name="guess_word", help="Guess the word for Wordle")
+async def wordle_guess_command(ctx, word_guess: str):
+    if word_guess.isalnum() is False:
+        await ctx.send(random_error_message())
+        await ctx.reply("That's not a valid guess!")
+        return
+
+    async with ctx.typing():
+        base_key = f"wordle.{ctx.channel.id}"
+        hangman_dict = main_bot_data.dictionary_get(f"{base_key}")
+        guesses = hangman_dict.get("guesses")
+
+        if guesses is None or guesses < 1:
+            await ctx.reply(f"The game is over! Please start a new one.")
+            return
+
+        word = hangman_dict["word"]
+
+        word_length = len(word)
+        guess_len = len(word_guess)
+        if guess_len != word_length:
+            await ctx.reply(f"The word is {word_length} characters long, try again!")
+            return
+
+        guesses -= 1
+
+        result_to_show = generate_wordle_guess_response(word.lower(), word_guess)
+
+        await ctx.reply(f"`{result_to_show}` \nGuesses Remaining: {guesses}")
+
+        if word_guess == word:
+            await ctx.reply("You win! Great Job!")
+            guesses = 0
+        elif guesses < 1:
+            await ctx.reply(f"You Lose! Better luck next time! \nThe word was: || {word} ||")
+            guesses = 0
+
+        main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
+
+def generate_wordle_guess_response(word: str, guess: str):
+    response = ""
+    for i in range(0, len(guess)):
+        if guess[i] == word[i]:
+            response += EMOJI_GREEN_SQUARE
+        elif guess[i] in word:
+            response += EMOJI_YELLOW_SQUARE
+        else:
+            response += EMOJI_BLACK_SQUARE
+    return response
 
 @bot.command(name="game", help="EXPERIMENT!! DOES NOT DO ANYTHING OF VALUE")
 async def game_command(ctx):
