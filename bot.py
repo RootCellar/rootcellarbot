@@ -50,6 +50,13 @@ ERROR_MESSAGES = [ "huh?", "what?", "*implodes*", "no u", "AAAAAAAAAAAAAA", "I n
                    "I'm gonna", "Ask ChatGPT", "imagine", "yesn't", "Segmentation fault (core dumped)" ]
 NO_PERMISSION_ERROR_MESSAGE = f"Sorry, you don't have permission to do that."
 
+#
+# Emoji's
+#
+
+EMOJI_GREEN_SQUARE = '\U0001F7E9'
+EMOJI_YELLOW_SQUARE = '\U0001F7E8'
+EMOJI_BLACK_SQUARE = '\U00002B1B'
 
 MAIN_DATA_FILE = "main_bot_data.json"
 
