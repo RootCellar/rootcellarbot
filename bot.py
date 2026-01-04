@@ -517,6 +517,62 @@ async def fortune_command(ctx, *args):
     fortune = random.choice(FORTUNES)
     await ctx.send(fortune)
 
+@bot.command(name="hangman", help="Start a game of hangman")
+async def hangman_command(ctx, word: str):
+    async with ctx.typing():
+        base_key = f"hangman.{ctx.channel.id}"
+        main_bot_data.dictionary_set(f"{base_key}.word", word)
+        main_bot_data.dictionary_set(f"{base_key}.guesses", 4)
+        main_bot_data.dictionary_set(f"{base_key}.guessed", [])
+        await asyncio.sleep(1)
+
+    await ctx.reply("Starting a game of hangman!")
+
+@bot.command(name="letter", help="Guess a letter for hangman")
+async def game_command(ctx, letter: str):
+    if len(letter) != 1 or letter.isalnum() is False:
+        await ctx.send(random_error_message())
+        await ctx.reply("That's not a letter!")
+        return
+
+    async with ctx.typing():
+        base_key = f"hangman.{ctx.channel.id}"
+        hangman_dict = main_bot_data.dictionary_get(f"{base_key}")
+        guesses = hangman_dict.get("guesses")
+
+        if guesses is None or guesses < 1:
+            await ctx.reply(f"The game is over! Please start a new one.")
+            return
+
+        guessed = hangman_dict["guessed"]
+
+        letter = letter.lower()
+
+        if letter in guessed:
+            await ctx.reply(f"'**{letter}**' has already been guessed!")
+            return
+
+        word = hangman_dict["word"]
+
+        if letter not in word:
+            guesses -= 1
+        guessed.append(letter)
+
+        word_to_show = word.lower()
+        for character in word:
+            if character not in guessed:
+                word_to_show = word_to_show.replace(character, "_")
+
+        main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
+        main_bot_data.dictionary_set(f"{base_key}.guessed", guessed)
+
+        await ctx.reply(f"`{word_to_show}` \nIncorrect Guesses Remaining: {guesses}")
+
+        if word_to_show == word:
+            await ctx.reply("You win! Great Job!")
+        elif guesses < 1:
+            await ctx.reply(f"You Lose! Better luck next time! \nThe word was: || {word} ||")
+
 @bot.command(name="game", help="EXPERIMENT!! DOES NOT DO ANYTHING OF VALUE")
 async def game_command(ctx):
 
