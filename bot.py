@@ -340,7 +340,7 @@ async def on_command_error(ctx, error):
 async def hello_command(ctx):
     await ctx.send("Hello! I'm a bot.")
 
-@bot.command(name="debug", help="(Admin-only) Enable/Disable specific debug channels)")
+@bot.command(name="debug", help="(Admin-only) Enable/Disable specific debug channels")
 async def debug_command(ctx, name: str, value: bool):
     if is_admin_user(ctx.author) is False:
         await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
@@ -358,7 +358,7 @@ async def debug_command(ctx, name: str, value: bool):
     key = get_debug_channel_value_path(name)
     await ctx.reply(f"Set `{key}` to `{value}`")
 
-@bot.command(name="debugged", help="(Admin-only) Show debug channel values)")
+@bot.command(name="debugged", help="(Admin-only) Show debug channel values")
 async def debugged_command(ctx):
     if is_admin_user(ctx.author) is False:
         await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
