@@ -552,7 +552,7 @@ async def hangman_command(ctx, channel: int, word: str):
 
     await channel.send("Starting a game of hangman!")
     word_to_show = generate_hangman_current_word(word, [])
-    await channel.send(f"`{word_to_show}` \nIncorrect Guesses Remaining: {guesses}")
+    await channel.send(f"`{word_to_show}` \nIncorrect Guesses Remaining: {guesses} \nUse `{COMMAND_PREFIX}letter <letter>` to guess a letter!")
     await ctx.reply("Done!")
 
 @bot.command(name="letter", help="Guess a letter for hangman")
@@ -623,7 +623,7 @@ async def wordle_channel_command(ctx, channel: int, word: str):
         await asyncio.sleep(1)
 
     await channel.send("Starting a game of wordle!")
-    await channel.send(f"`{length}` letters... \nWhat is it?")
+    await channel.send(f"`{length}` letters... \nWhat is it? \nUse `{COMMAND_PREFIX}guess_word <word>` to guess!")
     await ctx.reply("Done!")
 
 @bot.command(name="guess_word", help="Guess the word for Wordle")
