@@ -5,6 +5,7 @@ import requests
 import random
 import datetime
 
+import asyncio
 from asyncio import Lock
 
 import discord
@@ -479,6 +480,13 @@ async def random_no_command(ctx):
         raise ValueError("'random_no' is not set")
 
     await ctx.send(f"{random_no}")
+
+@bot.command(name="error", help="Send a random error message")
+async def random_error_command(ctx):
+    async with ctx.typing():
+        await asyncio.sleep(2)
+
+    await ctx.reply(random_error_message())
 
 @bot.command(name="mock", help="Generate and send a string mocking the given string")
 async def mock_command(ctx, *args):
