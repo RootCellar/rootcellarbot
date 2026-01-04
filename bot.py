@@ -536,8 +536,23 @@ async def hangman_command(ctx, word: str):
     await ctx.reply("Starting a game of hangman!")
 
 @bot.command(name="hangman_channel", help="Start a game of hangman in another channel")
-async def hangman_command(ctx, channel: int, word: str):
+async def hangman_command(ctx, channel: int = None, word: str = None):
     async with ctx.typing():
+        if channel is None:
+            response_string = "If you would like to create a game, please give me the channel ID and a word."
+            response_string += f"\nFor this channel, the command would be: `{COMMAND_PREFIX}hangman_channel {ctx.channel.id} <word>`"
+            response_string += f"\n-# You can DM this command to me or run it from a different channel so you don't reveal the answer"
+            await ctx.reply(response_string)
+            return
+
+        if word is None:
+            await ctx.reply("Please give me a word to use to run the game!")
+            return
+
+        if word.isalnum() is False:
+            await ctx.reply("That's not a word!")
+            return
+
         word = word.lower()
         guesses = 4
         channel = await bot.fetch_channel(channel)
@@ -608,8 +623,23 @@ def generate_hangman_current_word(word, guessed):
     return word_to_show
 
 @bot.command(name="wordle_channel", help="Start a game of wordle in another channel")
-async def wordle_channel_command(ctx, channel: int, word: str):
+async def wordle_channel_command(ctx, channel: int = None, word: str = None):
     async with ctx.typing():
+        if channel is None:
+            response_string = "If you would like to create a game, please give me the channel ID and a word."
+            response_string += f"\nFor this channel, the command would be: `{COMMAND_PREFIX}wordle_channel {ctx.channel.id} <word>`"
+            response_string += f"\n-# You can DM this command to me or run it from a different channel so you don't reveal the answer"
+            await ctx.reply(response_string)
+            return
+
+        if word is None:
+            await ctx.reply("Please give me a word to use to run the game!")
+            return
+
+        if word.isalnum() is False:
+            await ctx.reply("That's not a word!")
+            return
+
         word = word.lower()
         length = len(word)
         guesses = length + 1
