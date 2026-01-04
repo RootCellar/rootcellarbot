@@ -548,7 +548,7 @@ async def hangman_command(ctx, channel: int, word: str):
     await channel.send(f"`{word_to_show}` \nIncorrect Guesses Remaining: {guesses}")
 
 @bot.command(name="letter", help="Guess a letter for hangman")
-async def game_command(ctx, letter: str):
+async def letter_command(ctx, letter: str):
     if len(letter) != 1 or letter.isalnum() is False:
         await ctx.send(random_error_message())
         await ctx.reply("That's not a letter!")
