@@ -643,6 +643,7 @@ async def wordle_guess_command(ctx, word_guess: str):
             return
 
         word = hangman_dict["word"]
+        word_guess = word_guess.lower()
 
         word_length = len(word)
         guess_len = len(word_guess)
