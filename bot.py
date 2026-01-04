@@ -558,20 +558,28 @@ async def game_command(ctx, letter: str):
             guesses -= 1
         guessed.append(letter)
 
-        word_to_show = word.lower()
-        for character in word:
-            if character not in guessed:
-                word_to_show = word_to_show.replace(character, "_")
-
-        main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
-        main_bot_data.dictionary_set(f"{base_key}.guessed", guessed)
+        word_to_show = generate_hangman_current_word(word.lower(), guessed)
 
         await ctx.reply(f"`{word_to_show}` \nIncorrect Guesses Remaining: {guesses}")
 
         if word_to_show == word:
             await ctx.reply("You win! Great Job!")
+            guesses = 0
         elif guesses < 1:
             await ctx.reply(f"You Lose! Better luck next time! \nThe word was: || {word} ||")
+            guesses = 0
+
+        main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
+        main_bot_data.dictionary_set(f"{base_key}.guessed", guessed)
+
+
+def generate_hangman_current_word(word, guessed):
+    word_to_show = word
+    for character in word:
+        if character not in guessed:
+            word_to_show = word_to_show.replace(character, "_")
+    return word_to_show
+
 
 @bot.command(name="game", help="EXPERIMENT!! DOES NOT DO ANYTHING OF VALUE")
 async def game_command(ctx):
