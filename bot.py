@@ -553,6 +553,7 @@ async def hangman_command(ctx, channel: int, word: str):
     await channel.send("Starting a game of hangman!")
     word_to_show = generate_hangman_current_word(word, [])
     await channel.send(f"`{word_to_show}` \nIncorrect Guesses Remaining: {guesses}")
+    await ctx.reply("Done!")
 
 @bot.command(name="letter", help="Guess a letter for hangman")
 async def letter_command(ctx, letter: str):
