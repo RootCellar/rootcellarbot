@@ -28,6 +28,8 @@ DEFAULT_STATUS = os.getenv('DEFAULT_STATUS', default = '')
 DEFAULT_STATUS_MESSAGE = os.getenv('DEFAULT_STATUS_MESSAGE', default = '')
 ADMIN_USERNAMES = os.getenv('ADMIN_USERNAMES', default = '')
 
+WORDLE_WORDS_FILE = os.getenv('WORDLE_WORDS_FILE', default = '')
+
 #
 # CONSTANTS
 #
@@ -77,6 +79,7 @@ MAIN_DATA_FILE = "main_bot_data.json"
 
 data_lock = Lock()
 debug_channel_dict = {}
+wordle_words = []
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -141,6 +144,14 @@ def generate_log_message(message):
 #
 # DATA
 #
+
+def load_file_lines(file_name: str) -> list[str]:
+    debug("load_file_lines", file_name)
+    lines = []
+    with open(file_name) as f:
+        for line in f:
+            lines.append(line[0:-1])
+    return lines
 
 def load_json_data(file_name):
     debug("json_data", f"Loading {file_name}...")
@@ -330,6 +341,13 @@ async def on_ready():
     for key in debug_dict.keys():
         value = debug_dict[key]
         debug_channel_dict[key] = value
+
+    # Load Wordle Words
+
+    if WORDLE_WORDS_FILE is not None and WORDLE_WORDS_FILE != "":
+        words_from_file = load_file_lines(WORDLE_WORDS_FILE)
+        for word in words_from_file:
+            wordle_words.append(word)
 
     # Done! Set Status
 
@@ -647,6 +665,26 @@ def generate_hangman_current_word(word, guessed):
             word_to_show = word_to_show.replace(character, "_")
     return word_to_show
 
+async def create_wordle_game_in_channel(channel, word):
+    word = word.lower()
+    length = len(word)
+    guesses = length + 1
+    base_key = f"wordle.{channel.id}"
+    main_bot_data.dictionary_set(f"{base_key}.word", word)
+    main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
+    main_bot_data.dictionary_set(f"{base_key}.guessed", [])
+    await channel.send("Starting a game of Wordle!")
+    await channel.send(f"`{length}` letters... \nWhat is it? \nUse `{COMMAND_PREFIX}guess_word <word>` to guess!")
+
+@bot.command(name="random_wordle", help="Start a game of Wordle with a randomly chosen word")
+async def random_wordle_command(ctx):
+    async with ctx.typing():
+        if len(wordle_words) < 1:
+            await ctx.reply("Don't have any words to use! Sorry!")
+            return
+        word = random.choice(wordle_words)
+        await create_wordle_game_in_channel(ctx.channel, word)
+
 @bot.command(name="wordle_channel", help="Start a game of Wordle in another channel")
 async def wordle_channel_command(ctx, channel: int = None, word: str = None):
     async with ctx.typing():
@@ -665,21 +703,14 @@ async def wordle_channel_command(ctx, channel: int = None, word: str = None):
             await ctx.reply("That's not a word!")
             return
 
-        word = word.lower()
-        length = len(word)
-        guesses = length + 1
         channel = await bot.fetch_channel(channel)
         if channel is None:
             ctx.reply("Could not find that channel.")
             return
-        base_key = f"wordle.{channel.id}"
-        main_bot_data.dictionary_set(f"{base_key}.word", word)
-        main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
-        main_bot_data.dictionary_set(f"{base_key}.guessed", [])
+
+        await create_wordle_game_in_channel(channel, word)
         await asyncio.sleep(1)
 
-    await channel.send("Starting a game of Wordle!")
-    await channel.send(f"`{length}` letters... \nWhat is it? \nUse `{COMMAND_PREFIX}guess_word <word>` to guess!")
     await ctx.reply("Done!")
 
 @bot.command(name="guess_word", help="Guess the word for Wordle")
