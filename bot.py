@@ -338,9 +338,10 @@ async def on_ready():
     # Load debug channel statuses
 
     debug_dict = main_bot_data.dictionary_get(DEBUG_CHANNEL_DICT_PATH)
-    for key in debug_dict.keys():
-        value = debug_dict[key]
-        debug_channel_dict[key] = value
+    if isinstance(debug_dict, dict) is True:
+        for key in debug_dict.keys():
+            value = debug_dict[key]
+            debug_channel_dict[key] = value
 
     # Load Wordle Words
 
