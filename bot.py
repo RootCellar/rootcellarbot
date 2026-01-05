@@ -650,6 +650,7 @@ async def wordle_channel_command(ctx, channel: int = None, word: str = None):
         base_key = f"wordle.{channel.id}"
         main_bot_data.dictionary_set(f"{base_key}.word", word)
         main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
+        main_bot_data.dictionary_set(f"{base_key}.guessed", [])
         await asyncio.sleep(1)
 
     await channel.send("Starting a game of Wordle!")
@@ -665,14 +666,14 @@ async def wordle_guess_command(ctx, word_guess: str):
 
     async with ctx.typing():
         base_key = f"wordle.{ctx.channel.id}"
-        hangman_dict = main_bot_data.dictionary_get(f"{base_key}")
-        guesses = hangman_dict.get("guesses")
+        wordle_dict = main_bot_data.dictionary_get(f"{base_key}")
+        guesses = wordle_dict.get("guesses")
 
         if guesses is None or guesses < 1:
             await ctx.reply(f"The game is over! Please start a new one.")
             return
 
-        word = hangman_dict["word"]
+        word = wordle_dict["word"]
         word_guess = word_guess.lower()
 
         word_length = len(word)
@@ -681,11 +682,18 @@ async def wordle_guess_command(ctx, word_guess: str):
             await ctx.reply(f"The word is {word_length} characters long, try again!")
             return
 
+        guessed = wordle_dict["guessed"]
+        guessed.append(word_guess)
         guesses -= 1
 
-        result_to_show = generate_wordle_guess_response(word.lower(), word_guess)
+        # result_to_show = generate_wordle_guess_response(word, word_guess)
+        result_lines = []
+        for guess in guessed:
+            guess_response = generate_wordle_guess_response(word, guess)
+            result_lines.append(f"`{guess}` - `{guess_response}`")
+        result_to_show = "\n".join(result_lines)
 
-        await ctx.reply(f"`{result_to_show}` \nGuesses Remaining: {guesses}")
+        await ctx.reply(f"{result_to_show}\nGuesses Remaining: {guesses}")
 
         if word_guess == word:
             await ctx.reply("You win! Great Job!")
@@ -695,6 +703,7 @@ async def wordle_guess_command(ctx, word_guess: str):
             guesses = 0
 
         main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
+        main_bot_data.dictionary_set(f"{base_key}.guessed", guessed)
 
 def generate_wordle_guess_response(word: str, guess: str):
     response = ""
