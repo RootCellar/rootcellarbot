@@ -567,16 +567,25 @@ async def fortune_command(ctx, *args):
     fortune = random.choice(FORTUNES)
     await ctx.send(fortune)
 
-@bot.command(name="hangman", help="Start a game of hangman")
-async def hangman_command(ctx, word: str):
-    async with ctx.typing():
-        base_key = f"hangman.{ctx.channel.id}"
-        main_bot_data.dictionary_set(f"{base_key}.word", word)
-        main_bot_data.dictionary_set(f"{base_key}.guesses", 4)
-        main_bot_data.dictionary_set(f"{base_key}.guessed", [])
-        await asyncio.sleep(1)
+async def create_hangman_game_in_channel(channel, word):
+    word = word.lower()
+    guesses = 4
+    base_key = f"hangman.{channel.id}"
+    main_bot_data.dictionary_set(f"{base_key}.word", word)
+    main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
+    main_bot_data.dictionary_set(f"{base_key}.guessed", [])
+    await channel.send("Starting a game of hangman!")
+    word_to_show = generate_hangman_current_word(word, [])
+    await channel.send(f"`{word_to_show}` \nIncorrect Guesses Remaining: {guesses} \nUse `{COMMAND_PREFIX}letter <letter>` to guess a letter!")
 
-    await ctx.reply("Starting a game of hangman!")
+@bot.command(name="random_hangman", help="Start a game of Hangman with a randomly chosen word")
+async def random_hangman_command(ctx):
+    async with ctx.typing():
+        if len(wordle_words) < 1:
+            await ctx.reply("Don't have any words to use! Sorry!")
+            return
+        word = random.choice(wordle_words)
+        await create_hangman_game_in_channel(ctx.channel, word)
 
 @bot.command(name="hangman_channel", help="Start a game of hangman in another channel")
 async def hangman_command(ctx, channel: int = None, word: str = None):
@@ -596,21 +605,14 @@ async def hangman_command(ctx, channel: int = None, word: str = None):
             await ctx.reply("That's not a word!")
             return
 
-        word = word.lower()
-        guesses = 4
         channel = await bot.fetch_channel(channel)
         if channel is None:
             ctx.reply("Could not find that channel.")
             return
-        base_key = f"hangman.{channel.id}"
-        main_bot_data.dictionary_set(f"{base_key}.word", word)
-        main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
-        main_bot_data.dictionary_set(f"{base_key}.guessed", [])
+
+        await create_hangman_game_in_channel(channel, word)
         await asyncio.sleep(1)
 
-    await channel.send("Starting a game of hangman!")
-    word_to_show = generate_hangman_current_word(word, [])
-    await channel.send(f"`{word_to_show}` \nIncorrect Guesses Remaining: {guesses} \nUse `{COMMAND_PREFIX}letter <letter>` to guess a letter!")
     await ctx.reply("Done!")
 
 @bot.command(name="letter", help="Guess a letter for hangman")
