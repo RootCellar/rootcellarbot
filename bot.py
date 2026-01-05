@@ -622,7 +622,7 @@ def generate_hangman_current_word(word, guessed):
             word_to_show = word_to_show.replace(character, "_")
     return word_to_show
 
-@bot.command(name="wordle_channel", help="Start a game of wordle in another channel")
+@bot.command(name="wordle_channel", help="Start a game of Wordle in another channel")
 async def wordle_channel_command(ctx, channel: int = None, word: str = None):
     async with ctx.typing():
         if channel is None:
@@ -652,7 +652,7 @@ async def wordle_channel_command(ctx, channel: int = None, word: str = None):
         main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
         await asyncio.sleep(1)
 
-    await channel.send("Starting a game of wordle!")
+    await channel.send("Starting a game of Wordle!")
     await channel.send(f"`{length}` letters... \nWhat is it? \nUse `{COMMAND_PREFIX}guess_word <word>` to guess!")
     await ctx.reply("Done!")
 
