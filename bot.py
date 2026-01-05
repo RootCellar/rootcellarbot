@@ -16,6 +16,9 @@ from requests import JSONDecodeError
 
 load_dotenv()
 
+ALWAYS_DEBUG = bool(os.getenv('ALWAYS_DEBUG', default = 'False'))
+DEFAULT_DEBUG_CHANNEL_STATUS = bool(os.getenv('DEFAULT_DEBUG_CHANNEL_STATUS', default = 'False'))
+
 COMMAND_PREFIX = os.getenv('COMMAND_PREFIX', default = '!')
 DEFAULT_STATUS = os.getenv('DEFAULT_STATUS', default = '')
 DEFAULT_STATUS_MESSAGE = os.getenv('DEFAULT_STATUS_MESSAGE', default = '')
@@ -61,6 +64,7 @@ EMOJI_BLACK_SQUARE = '\U00002B1B'
 MAIN_DATA_FILE = "main_bot_data.json"
 
 data_lock = Lock()
+debug_channel_dict = {}
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -73,16 +77,68 @@ intents.expressions = True
 intents.typing = True
 
 #
+# LOGGING and DEBUGGING
+#
+
+def get_debug_channel_value_path(name: str):
+    return f"{DEBUG_CHANNEL_DICT_PATH}.{name}"
+
+def get_debug_channel_value(channel: str):
+    value = debug_channel_dict.get(channel)
+    return value
+
+def set_debug_channel_value(channel: str, value: bool):
+    debug_channel_dict[channel] = value
+    key = get_debug_channel_value_path(channel)
+    # main_bot_data.dictionary_set(key, value)
+
+def should_log_debug_channel(channel: str):
+    value = get_debug_channel_value(channel)
+
+    if value is True:
+        return True
+    if value is None:
+        pass
+        # This serves as an "automatic registration", so that
+        # commands such as "prefix!debugged" will show all channels
+        # that the program has attempted to use
+        set_debug_channel_value(channel, DEFAULT_DEBUG_CHANNEL_STATUS)
+
+    return False
+
+def debug(channel: str, message: str):
+    if should_log_debug_channel(channel) is True or ALWAYS_DEBUG is True:
+        log(f"[DEBUG] {channel}: {message}")
+
+def strip_non_ascii(text: str):
+    return re.sub(r'[^\x00-\x7f]', r'?', text)
+
+def log(message):
+    message_to_write = generate_log_message(message)
+    print(message_to_write)
+    with open('info.log', 'a') as file:
+        file.write(f"{message_to_write} \n")
+
+def generate_log_message(message):
+    now = datetime.datetime.now()
+    formatted_datetime = now.strftime("%Y-%m-%d %H:%M:%S")
+    formatted_message = strip_non_ascii(message)
+    message_to_write = f"{formatted_datetime} - {formatted_message}"
+    return message_to_write
+
+#
 # DATA
 #
 
 def load_json_data(file_name):
+    debug("json_data", f"Loading {file_name}...")
     if os.path.exists(file_name):
         with open(file_name, 'r') as file:
             return json.load(file)
     return {}
 
 async def save_json_data(data, file_name):
+    debug("json_data", f"Saving {file_name}...")
     async with data_lock:
         with open(file_name, 'w') as file:
             json.dump(data, file, indent=4)
@@ -154,8 +210,6 @@ class JsonDictionary(object):
 main_bot_data_json = load_json_data(MAIN_DATA_FILE)
 main_bot_data = JsonDictionary(name = "main_data", dictionary = main_bot_data_json)
 
-debug_channel_dict = {}
-
 class CustomBot(commands.Bot):
     async def close(self):
         print("Saving data...")
@@ -187,9 +241,6 @@ def mock_string(message):
         else:
             to_ret += message[i].lower()
     return to_ret
-
-def strip_non_ascii(text: str):
-    return re.sub(r'[^\x00-\x7f]', r'?', text)
 
 #
 # Performs a GET fetch and returns the JSON response
@@ -252,48 +303,6 @@ def is_admin_user(user):
             return True
     return False
 
-
-def get_debug_channel_value_path(name: str):
-    return f"{DEBUG_CHANNEL_DICT_PATH}.{name}"
-
-def get_debug_channel_value(channel: str):
-    value = debug_channel_dict.get(channel)
-    return value
-
-def set_debug_channel_value(channel: str, value: bool):
-    debug_channel_dict[channel] = value
-    key = get_debug_channel_value_path(channel)
-    main_bot_data.dictionary_set(key, value)
-
-def should_log_debug_channel(channel: str):
-    value = get_debug_channel_value(channel)
-
-    if value is True:
-        return True
-    if value is None:
-        # This serves as an "automatic registration", so that
-        # commands such as "prefix!debugged" will show all channels
-        # that the program has attempted to use
-        set_debug_channel_value(channel, False)
-
-    return False
-
-def debug(channel: str, message: str):
-    if should_log_debug_channel(channel) is True:
-        log(f"[DEBUG] {channel}: {message}")
-
-def log(message):
-    message_to_write = generate_log_message(message)
-    print(message_to_write)
-    with open('info.log', 'a') as file:
-        file.write(f"{message_to_write} \n")
-
-def generate_log_message(message):
-    now = datetime.datetime.now()
-    formatted_datetime = now.strftime("%Y-%m-%d %H:%M:%S")
-    formatted_message = strip_non_ascii(message)
-    message_to_write = f"{formatted_datetime} - {formatted_message}"
-    return message_to_write
 
 #
 # On Connect
