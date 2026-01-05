@@ -150,7 +150,7 @@ def load_file_lines(file_name: str) -> list[str]:
     lines = []
     with open(file_name) as f:
         for line in f:
-            lines.append(line[0:-1])
+            lines.append(line)
     return lines
 
 def load_json_data(file_name):
@@ -347,7 +347,7 @@ async def on_ready():
     if WORDLE_WORDS_FILE is not None and WORDLE_WORDS_FILE != "":
         words_from_file = load_file_lines(WORDLE_WORDS_FILE)
         for word in words_from_file:
-            wordle_words.append(word)
+            wordle_words.append(word.rstrip())
 
     # Done! Set Status
 
