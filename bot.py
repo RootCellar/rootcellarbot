@@ -16,6 +16,10 @@ from requests import JSONDecodeError
 
 load_dotenv()
 
+#
+# ENVIRONMENT VARIABLES
+#
+
 ALWAYS_DEBUG = bool(os.getenv('ALWAYS_DEBUG', default = 'False'))
 DEFAULT_DEBUG_CHANNEL_STATUS = bool(os.getenv('DEFAULT_DEBUG_CHANNEL_STATUS', default = 'False'))
 
@@ -23,6 +27,10 @@ COMMAND_PREFIX = os.getenv('COMMAND_PREFIX', default = '!')
 DEFAULT_STATUS = os.getenv('DEFAULT_STATUS', default = '')
 DEFAULT_STATUS_MESSAGE = os.getenv('DEFAULT_STATUS_MESSAGE', default = '')
 ADMIN_USERNAMES = os.getenv('ADMIN_USERNAMES', default = '')
+
+#
+# CONSTANTS
+#
 
 DEBUG_CHANNEL_DICT_PATH = "debug.type"
 
@@ -62,6 +70,10 @@ EMOJI_YELLOW_SQUARE = '\U0001F7E8'
 EMOJI_BLACK_SQUARE = '\U00002B1B'
 
 MAIN_DATA_FILE = "main_bot_data.json"
+
+#
+# GLOBAL DATA
+#
 
 data_lock = Lock()
 debug_channel_dict = {}
@@ -312,10 +324,14 @@ def is_admin_user(user):
 async def on_ready():
     log("Populating data...")
 
+    # Load debug channel statuses
+
     debug_dict = main_bot_data.dictionary_get(DEBUG_CHANNEL_DICT_PATH)
     for key in debug_dict.keys():
         value = debug_dict[key]
         debug_channel_dict[key] = value
+
+    # Done! Set Status
 
     log(f"Logged in as {bot.user}!")
     debug("startup", f"Logged in as {bot.user}")
