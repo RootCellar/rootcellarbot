@@ -818,6 +818,9 @@ async def on_presence_update(before, after):
     handle_online_status_change(before, after)
     handle_activity_change(before, after)
 
+# This is left over from early versions of the bot, as part of
+# discovering discord.py and what was possible.
+# This information is logged, but not otherwise used.
 def handle_online_status_change(before, after):
     if before.status == after.status:
         return
@@ -833,6 +836,9 @@ def handle_online_status_change(before, after):
     elif after.status == discord.Status.offline:
         log(f"Status: {username} is now offline")
 
+# This is left over from early versions of the bot, as part of
+# discovering discord.py and what was possible.
+# This information is logged, but not otherwise used.
 def handle_activity_change(before, after):
     username = compute_printed_user(after)
     before_spotify = get_spotify_activity(before.activities)
