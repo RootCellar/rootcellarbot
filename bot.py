@@ -1,3 +1,10 @@
+
+#
+# Copyright (c) 2025 Darian Marvel. See LICENSE
+#
+# `rootcellar` on Discord.
+#
+
 import os
 import re
 import json
