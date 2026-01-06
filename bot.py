@@ -80,6 +80,7 @@ MAIN_DATA_FILE = "main_bot_data.json"
 # GLOBAL DATA
 #
 
+startup_time = datetime.datetime.now()
 data_lock = Lock()
 debug_channel_dict = {}
 wordle_words = []
@@ -400,6 +401,8 @@ async def info_command(ctx):
         message.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
 
         message.add_field(name = "key", value = "value")
+        message.add_field(name = "Startup Time", value = format_datetime(startup_time))
+
         await ctx.channel.send(embed=message)
 
 @bot.command(name="debug", help="(Admin-only) Enable/Disable specific debug channels")
