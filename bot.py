@@ -23,6 +23,9 @@ load_dotenv()
 ALWAYS_DEBUG = bool(os.getenv('ALWAYS_DEBUG', default = 'False'))
 DEFAULT_DEBUG_CHANNEL_STATUS = bool(os.getenv('DEFAULT_DEBUG_CHANNEL_STATUS', default = 'False'))
 
+BOT_NAME = os.getenv('BOT_NAME', default = 'unnamed')
+BOT_ICON_URL = os.getenv('BOT_ICON_URL', default = '')
+BOT_COLOR = int(os.getenv('BOT_COLOR', default = '0xff0000'), 16)
 COMMAND_PREFIX = os.getenv('COMMAND_PREFIX', default = '!')
 DEFAULT_STATUS = os.getenv('DEFAULT_STATUS', default = '')
 DEFAULT_STATUS_MESSAGE = os.getenv('DEFAULT_STATUS_MESSAGE', default = '')
@@ -386,6 +389,18 @@ async def on_command_error(ctx, error):
 @bot.command(name="hello", help="Says hello")
 async def hello_command(ctx):
     await ctx.send("Hello! I'm a bot.")
+
+@bot.command(name="info", help="Send bot info")
+async def info_command(ctx):
+    async with ctx.typing():
+        message = discord.Embed(colour = BOT_COLOR)
+
+        message.set_thumbnail(url = BOT_ICON_URL)
+        message.set_author(name= BOT_NAME, icon_url=BOT_ICON_URL)
+        message.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
+
+        message.add_field(name = "key", value = "value")
+        await ctx.channel.send(embed=message)
 
 @bot.command(name="debug", help="(Admin-only) Enable/Disable specific debug channels")
 async def debug_command(ctx, name: str, value: bool):
