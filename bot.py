@@ -135,11 +135,14 @@ def log(message):
         file.write(f"{message_to_write} \n")
 
 def generate_log_message(message):
-    now = datetime.datetime.now()
-    formatted_datetime = now.strftime("%Y-%m-%d %H:%M:%S")
+    formatted_datetime = format_datetime(datetime.datetime.now())
     formatted_message = strip_non_ascii(message)
     message_to_write = f"{formatted_datetime} - {formatted_message}"
     return message_to_write
+
+def format_datetime(datetime_to_format: datetime.datetime):
+    formatted_datetime = datetime_to_format.strftime(f"%Y-%m-%d %H:%M:%S")
+    return formatted_datetime
 
 #
 # DATA
