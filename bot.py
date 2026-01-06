@@ -900,8 +900,8 @@ async def on_message(message):
 
     # Process user messages
 
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
+    # if message.content.startswith('$hello'):
+    #     await message.channel.send('Hello!')
 
     # Handle commands
     # Explicit call required in order to use discord.py builtin command processing
