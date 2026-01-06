@@ -46,31 +46,35 @@ WORDLE_WORDS_FILE = os.getenv('WORDLE_WORDS_FILE', default = '')
 
 DEBUG_CHANNEL_DICT_PATH = "debug.type"
 
-FORTUNES= [
-"It is certain",
-"It is decidedly so",
-"Without a doubt",
-"Yes definitely",
-"You may rely on it",
-"As I see it, yes",
-"Most likely",
-"Outlook good",
-"Yes",
-"Signs points to yes",
-"Reply hazy, try again",
-"Ask again later",
-"Better not tell you now",
-"Cannot predict now",
-"Concentrate and ask again",
-"Don't count on it",
-"My reply is no",
-"My sources say no",
-"Outlook not so good",
-"Very doubtful"
+FORTUNES = [
+    "It is certain",
+    "It is decidedly so",
+    "Without a doubt",
+    "Yes definitely",
+    "You may rely on it",
+    "As I see it, yes",
+    "Most likely",
+    "Outlook good",
+    "Yes",
+    "Signs points to yes",
+    "Reply hazy, try again",
+    "Ask again later",
+    "Better not tell you now",
+    "Cannot predict now",
+    "Concentrate and ask again",
+    "Don't count on it",
+    "My reply is no",
+    "My sources say no",
+    "Outlook not so good",
+    "Very doubtful"
 ]
 
-ERROR_MESSAGES = [ "huh?", "what?", "*implodes*", "no u", "AAAAAAAAAAAAAA", "I need....a penguin plushie", "whar?", "~~sanity~~", "explode", "you wish", "bruh", "|| no ||",
-                   "I'm gonna", "Ask ChatGPT", "imagine", "yesn't", "Segmentation fault (core dumped)" ]
+ERROR_MESSAGES = [
+    "huh?", "what?", "*implodes*", "no u", "AAAAAAAAAAAAAA", "I need....a penguin plushie", "whar?", "~~sanity~~",
+    "explode", "you wish", "bruh", "|| no ||",
+    "I'm gonna", "Ask ChatGPT", "imagine", "yesn't", "Segmentation fault (core dumped)"
+]
+
 NO_PERMISSION_ERROR_MESSAGE = f"Sorry, you don't have permission to do that."
 
 #
@@ -102,21 +106,26 @@ intents.reactions = True
 intents.expressions = True
 intents.typing = True
 
+
 #
 # LOGGING and DEBUGGING
 #
 
+
 def get_debug_channel_value_path(name: str):
     return f"{DEBUG_CHANNEL_DICT_PATH}.{name}"
+
 
 def get_debug_channel_value(channel: str):
     value = debug_channel_dict.get(channel)
     return value
 
+
 def set_debug_channel_value(channel: str, value: bool):
     debug_channel_dict[channel] = value
     key = get_debug_channel_value_path(channel)
     # main_bot_data.dictionary_set(key, value)
+
 
 def should_log_debug_channel(channel: str):
     value = get_debug_channel_value(channel)
@@ -132,12 +141,15 @@ def should_log_debug_channel(channel: str):
 
     return False
 
+
 def debug(channel: str, message: str):
     if should_log_debug_channel(channel) is True or ALWAYS_DEBUG is True:
         log(f"[DEBUG] {channel}: {message}")
 
+
 def strip_non_ascii(text: str):
     return re.sub(r'[^\x00-\x7f]', r'?', text)
+
 
 def log(message):
     message_to_write = generate_log_message(message)
@@ -145,19 +157,23 @@ def log(message):
     with open('info.log', 'a') as file:
         file.write(f"{message_to_write} \n")
 
+
 def generate_log_message(message):
     formatted_datetime = format_datetime(datetime.datetime.now())
     formatted_message = strip_non_ascii(message)
     message_to_write = f"{formatted_datetime} - {formatted_message}"
     return message_to_write
 
+
 def format_datetime(datetime_to_format: datetime.datetime):
     formatted_datetime = datetime_to_format.strftime(f"%Y-%m-%d %H:%M:%S")
     return formatted_datetime
 
+
 #
 # DATA
 #
+
 
 def load_file_lines(file_name: str) -> list[str]:
     debug("load_file_lines", file_name)
@@ -167,6 +183,7 @@ def load_file_lines(file_name: str) -> list[str]:
             lines.append(line)
     return lines
 
+
 def load_json_data(file_name):
     debug("json_data", f"Loading {file_name}...")
     if os.path.exists(file_name):
@@ -174,11 +191,13 @@ def load_json_data(file_name):
             return json.load(file)
     return {}
 
+
 async def save_json_data(data, file_name):
     debug("json_data", f"Saving {file_name}...")
     async with data_lock:
         with open(file_name, 'w') as file:
-            json.dump(data, file, indent=4)
+            json.dump(data, file, indent = 4)
+
 
 class JsonDictionary(object):
     def __init__(self, name: str = "unnamed", dictionary = None):
@@ -244,8 +263,10 @@ class JsonDictionary(object):
             sub_dict[leaf_key] = value
             self.print_debug(f"dictionary_set: '{key}' to '{value}'")
 
+
 main_bot_data_json = load_json_data(MAIN_DATA_FILE)
 main_bot_data = JsonDictionary(name = "main_data", dictionary = main_bot_data_json)
+
 
 class CustomBot(commands.Bot):
     async def close(self):
@@ -254,20 +275,25 @@ class CustomBot(commands.Bot):
 
         await super().close()
 
-bot = CustomBot(command_prefix=COMMAND_PREFIX, intents=intents)
+
+bot = CustomBot(command_prefix = COMMAND_PREFIX, intents = intents)
+
 
 #
 # UTIL
 #
 
+
 def roll_dice(num_dice: int, sides: int):
     total = 0
     for x in range(1, num_dice + 1):
-        total += random.choice( range(1, sides + 1) )
+        total += random.choice(range(1, sides + 1))
     return total
+
 
 def random_error_message():
     return random.choice(ERROR_MESSAGES)
+
 
 def mock_string(message):
     to_ret = ""
@@ -278,6 +304,7 @@ def mock_string(message):
         else:
             to_ret += message[i].lower()
     return to_ret
+
 
 #
 # Performs a GET fetch and returns the JSON response
@@ -299,6 +326,7 @@ def http_get_json_generic(url):
 
     return response_json
 
+
 async def get_random_no():
     response_json = http_get_json_generic("https://naas.isalman.dev/no")
     if response_json is None:
@@ -309,6 +337,7 @@ async def get_random_no():
         raise ValueError("'reason' is not set")
 
     return reason
+
 
 def status_str_to_discord_status(status):
     if status == "online":
@@ -323,15 +352,17 @@ def status_str_to_discord_status(status):
         discord_status = None
     return discord_status
 
+
 async def update_presence(status: discord.Status | None, message: str | None):
     if status is None:
         status = discord.Status.online
 
     if message is None:
-        await bot.change_presence(status=status)
+        await bot.change_presence(status = status)
     else:
         game = discord.Game(message)
-        await bot.change_presence(status=status, activity=game)
+        await bot.change_presence(status = status, activity = game)
+
 
 def is_admin_user(user):
     users = ADMIN_USERNAMES.split(",")
@@ -344,6 +375,7 @@ def is_admin_user(user):
 #
 # On Connect
 #
+
 
 @bot.event
 async def on_ready():
@@ -372,13 +404,16 @@ async def on_ready():
     status = status_str_to_discord_status(DEFAULT_STATUS)
     await update_presence(status, DEFAULT_STATUS_MESSAGE)
 
+
 @bot.event
 async def on_disconnect():
     pass
 
+
 #
 # Commands
 #
+
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -394,25 +429,28 @@ async def on_command_error(ctx, error):
     # await ctx.send("well that threw an error")
     # await ctx.send(random_error_message())
 
-@bot.command(name="hello", help="Says hello")
+
+@bot.command(name = "hello", help = "Says hello")
 async def hello_command(ctx):
     await ctx.send("Hello! I'm a bot.")
 
-@bot.command(name="info", help="Send bot info")
+
+@bot.command(name = "info", help = "Send bot info")
 async def info_command(ctx):
     async with ctx.typing():
         message = discord.Embed(colour = BOT_COLOR)
 
         message.set_thumbnail(url = BOT_ICON_URL)
-        message.set_author(name= BOT_NAME, icon_url=BOT_ICON_URL)
-        message.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
+        message.set_author(name = BOT_NAME, icon_url = BOT_ICON_URL)
+        message.set_footer(text = f"Requested by {ctx.author}", icon_url = ctx.author.avatar.url)
 
         message.add_field(name = "key", value = "value")
         message.add_field(name = "Startup Time", value = format_datetime(startup_time))
 
-        await ctx.channel.send(embed=message)
+        await ctx.channel.send(embed = message)
 
-@bot.command(name="debug", help="(Admin-only) Enable/Disable specific debug channels")
+
+@bot.command(name = "debug", help = "(Admin-only) Enable/Disable specific debug channels")
 async def debug_command(ctx, name: str, value: bool):
     if is_admin_user(ctx.author) is False:
         await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
@@ -430,7 +468,8 @@ async def debug_command(ctx, name: str, value: bool):
     key = get_debug_channel_value_path(name)
     await ctx.reply(f"Set `{key}` to `{value}`")
 
-@bot.command(name="debugged", help="(Admin-only) Show debug channel values")
+
+@bot.command(name = "debugged", help = "(Admin-only) Show debug channel values")
 async def debugged_command(ctx):
     if is_admin_user(ctx.author) is False:
         await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
@@ -453,14 +492,16 @@ async def debugged_command(ctx):
 
     await ctx.reply(f"```{string_to_send}```")
 
-@bot.command(name="say", help="(Admin-only) Forces the bot to send the given message")
+
+@bot.command(name = "say", help = "(Admin-only) Forces the bot to send the given message")
 async def say_command(ctx, message: str):
     if is_admin_user(ctx.author):
         await ctx.send(message)
     else:
         await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
 
-@bot.command(name="say_to", help="(Admin-only) Forces the bot to send the given message to the given channel")
+
+@bot.command(name = "say_to", help = "(Admin-only) Forces the bot to send the given message to the given channel")
 async def say_to_command(ctx, channel_id: int, message: str):
     if is_admin_user(ctx.author):
         channel = await bot.fetch_channel(channel_id)
@@ -468,7 +509,8 @@ async def say_to_command(ctx, channel_id: int, message: str):
     else:
         await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
 
-@bot.command(name="status", help="(Admin-only) Changes the bot's status")
+
+@bot.command(name = "status", help = "(Admin-only) Changes the bot's status")
 async def status_command(ctx, status: str, message: str):
     if is_admin_user(ctx.author) is False:
         await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
@@ -478,7 +520,8 @@ async def status_command(ctx, status: str, message: str):
 
     await update_presence(discord_status, message)
 
-@bot.command(name="joke", help="Drop a joke into the chat")
+
+@bot.command(name = "joke", help = "Drop a joke into the chat")
 async def joke_command(ctx):
     async with ctx.typing():
         joke = http_get_json_generic("https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit")
@@ -494,7 +537,8 @@ async def joke_command(ctx):
         delivery = joke["joke"]
         await ctx.send(f"{delivery}")
 
-@bot.command(name="quote", help="Drop a wise quote into the chat")
+
+@bot.command(name = "quote", help = "Drop a wise quote into the chat")
 async def quote_command(ctx):
     async with ctx.typing():
         quotes = http_get_json_generic("https://zenquotes.io/api/random")
@@ -508,7 +552,8 @@ async def quote_command(ctx):
 
     await ctx.send(f"> {line} \n - {author}")
 
-@bot.command(name="kitty", help="Drop a cute kitty photo into the chat")
+
+@bot.command(name = "kitty", help = "Drop a cute kitty photo into the chat")
 async def kitty_command(ctx):
     async with ctx.typing():
         json = http_get_json_generic("https://api.thecatapi.com/v1/images/search")
@@ -522,7 +567,8 @@ async def kitty_command(ctx):
 
     await ctx.send(f"{url}")
 
-@bot.command(name="doggo", help="Drop a cute dog photo into the chat")
+
+@bot.command(name = "doggo", help = "Drop a cute dog photo into the chat")
 async def doggo_command(ctx):
     async with ctx.typing():
         json = http_get_json_generic("https://api.thedogapi.com/v1/images/search")
@@ -536,7 +582,8 @@ async def doggo_command(ctx):
 
     await ctx.send(f"{url}")
 
-@bot.command(name="penguin", help="Drop a penguin photo into the chat")
+
+@bot.command(name = "penguin", help = "Drop a penguin photo into the chat")
 async def penguin_command(ctx):
     async with ctx.typing():
         # From https://github.com/samSharivker/PenguinImageAPI
@@ -550,7 +597,8 @@ async def penguin_command(ctx):
 
     await ctx.send(f"{url}")
 
-@bot.command(name="no", help="Send a creative way of just saying `no`")
+
+@bot.command(name = "no", help = "Send a creative way of just saying `no`")
 async def random_no_command(ctx):
     async with ctx.typing():
         random_no = await get_random_no()
@@ -560,20 +608,23 @@ async def random_no_command(ctx):
 
     await ctx.send(f"{random_no}")
 
-@bot.command(name="error", help="Send a random error message")
+
+@bot.command(name = "error", help = "Send a random error message")
 async def random_error_command(ctx):
     async with ctx.typing():
         await asyncio.sleep(2)
 
     await ctx.reply(random_error_message())
 
-@bot.command(name="mock", help="Generate and send a string mocking the given string")
+
+@bot.command(name = "mock", help = "Generate and send a string mocking the given string")
 async def mock_command(ctx, *args):
     message = ' '.join(args)
     mocked_message = mock_string(message)
     await ctx.send(mocked_message)
 
-@bot.command(name="roll_dice", help="Rolls dice and sends the total")
+
+@bot.command(name = "roll_dice", help = "Rolls dice and sends the total")
 async def roll_dice_command(ctx, num_dice: int, sides: int):
     if num_dice < 1 or sides < 1:
         await ctx.send(random_error_message())
@@ -586,15 +637,18 @@ async def roll_dice_command(ctx, num_dice: int, sides: int):
 
     await ctx.send(f"`{total}`")
 
-@bot.command(name="choose_random", help="Choose a random item out of the given items")
+
+@bot.command(name = "choose_random", help = "Choose a random item out of the given items")
 async def choose_random_command(ctx, *args):
     choice = random.choice(args)
     await ctx.send(f"Random Choice: || `{choice}` ||")
 
-@bot.command(name="fortune", help="Ask a question and learn your fortune")
+
+@bot.command(name = "fortune", help = "Ask a question and learn your fortune")
 async def fortune_command(ctx, *args):
     fortune = random.choice(FORTUNES)
     await ctx.send(fortune)
+
 
 async def create_hangman_game_in_channel(channel, word):
     word = word.lower()
@@ -607,7 +661,8 @@ async def create_hangman_game_in_channel(channel, word):
     word_to_show = generate_hangman_current_word(word, [])
     await channel.send(f"`{word_to_show}` \nIncorrect Guesses Remaining: {guesses} \nUse `{COMMAND_PREFIX}letter <letter>` to guess a letter!")
 
-@bot.command(name="random_hangman", help="Start a game of Hangman with a randomly chosen word")
+
+@bot.command(name = "random_hangman", help = "Start a game of Hangman with a randomly chosen word")
 async def random_hangman_command(ctx):
     async with ctx.typing():
         if len(wordle_words) < 1:
@@ -616,7 +671,8 @@ async def random_hangman_command(ctx):
         word = random.choice(wordle_words)
         await create_hangman_game_in_channel(ctx.channel, word)
 
-@bot.command(name="hangman_channel", help="Start a game of hangman in another channel")
+
+@bot.command(name = "hangman_channel", help = "Start a game of hangman in another channel")
 async def hangman_command(ctx, channel: int = None, word: str = None):
     async with ctx.typing():
         if channel is None:
@@ -644,7 +700,8 @@ async def hangman_command(ctx, channel: int = None, word: str = None):
 
     await ctx.reply("Done!")
 
-@bot.command(name="letter", help="Guess a letter for hangman")
+
+@bot.command(name = "letter", help = "Guess a letter for hangman")
 async def letter_command(ctx, letter: str):
     if len(letter) != 1 or letter.isalnum() is False:
         await ctx.send(random_error_message())
@@ -696,6 +753,7 @@ def generate_hangman_current_word(word, guessed):
             word_to_show = word_to_show.replace(character, "_")
     return word_to_show
 
+
 async def create_wordle_game_in_channel(channel, word):
     word = word.lower()
     length = len(word)
@@ -707,7 +765,8 @@ async def create_wordle_game_in_channel(channel, word):
     await channel.send("Starting a game of Wordle!")
     await channel.send(f"`{length}` letters... \nWhat is it? \nUse `{COMMAND_PREFIX}guess_word <word>` to guess!")
 
-@bot.command(name="random_wordle", help="Start a game of Wordle with a randomly chosen word")
+
+@bot.command(name = "random_wordle", help = "Start a game of Wordle with a randomly chosen word")
 async def random_wordle_command(ctx):
     async with ctx.typing():
         if len(wordle_words) < 1:
@@ -716,7 +775,8 @@ async def random_wordle_command(ctx):
         word = random.choice(wordle_words)
         await create_wordle_game_in_channel(ctx.channel, word)
 
-@bot.command(name="wordle_channel", help="Start a game of Wordle in another channel")
+
+@bot.command(name = "wordle_channel", help = "Start a game of Wordle in another channel")
 async def wordle_channel_command(ctx, channel: int = None, word: str = None):
     async with ctx.typing():
         if channel is None:
@@ -744,7 +804,8 @@ async def wordle_channel_command(ctx, channel: int = None, word: str = None):
 
     await ctx.reply("Done!")
 
-@bot.command(name="guess_word", help="Guess the word for Wordle")
+
+@bot.command(name = "guess_word", help = "Guess the word for Wordle")
 async def wordle_guess_command(ctx, word_guess: str):
     if word_guess.isalnum() is False:
         await ctx.send(random_error_message())
@@ -792,6 +853,7 @@ async def wordle_guess_command(ctx, word_guess: str):
         main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
         main_bot_data.dictionary_set(f"{base_key}.guessed", guessed)
 
+
 def generate_wordle_guess_response(word: str, guess: str):
     response = ""
     for i in range(0, len(guess)):
@@ -803,7 +865,8 @@ def generate_wordle_guess_response(word: str, guess: str):
             response += EMOJI_BLACK_SQUARE
     return response
 
-@bot.command(name="game", help="EXPERIMENT!! DOES NOT DO ANYTHING OF VALUE")
+
+@bot.command(name = "game", help = "EXPERIMENT!! DOES NOT DO ANYTHING OF VALUE")
 async def game_command(ctx):
 
     # Just to give Pycharm a hint for the type
@@ -816,14 +879,17 @@ async def game_command(ctx):
 
     await ctx.send(f"{main_bot_data.dictionary_get(key)}")
 
+
 #
 # Activity
 #
+
 
 @bot.event
 async def on_presence_update(before, after):
     handle_online_status_change(before, after)
     handle_activity_change(before, after)
+
 
 # This is left over from early versions of the bot, as part of
 # discovering discord.py and what was possible.
@@ -843,6 +909,7 @@ def handle_online_status_change(before, after):
     elif after.status == discord.Status.offline:
         log(f"Status: {username} is now offline")
 
+
 # This is left over from early versions of the bot, as part of
 # discovering discord.py and what was possible.
 # This information is logged, but not otherwise used.
@@ -859,6 +926,7 @@ def handle_activity_change(before, after):
     if should_display_updated_playing_activity(before_playing, after_playing):
         log(f"Status: {username} is now playing {after_playing.name} ({after_playing.state}, {after_playing.details})")
 
+
 def should_display_updated_playing_activity(before, after):
     if isinstance(after, discord.Activity) is False:
         return False
@@ -866,6 +934,7 @@ def should_display_updated_playing_activity(before, after):
         if after.name != before.name:
             return True
     return True
+
 
 def should_display_updated_spotify_activity(before, after):
     if isinstance(after, discord.Spotify) is False:
@@ -875,11 +944,13 @@ def should_display_updated_spotify_activity(before, after):
             return True
     return True
 
+
 def get_spotify_activity(activities):
     for activity in activities:
         if isinstance(activity, discord.Spotify):
             return activity
     return None
+
 
 def get_playing_activity(activities):
     for activity in activities:
@@ -887,9 +958,11 @@ def get_playing_activity(activities):
             return activity
     return None
 
+
 #
 # Message
 #
+
 
 @bot.event
 async def on_message(message):
@@ -914,9 +987,11 @@ async def on_message(message):
     # Explicit call required in order to use discord.py builtin command processing
     await bot.process_commands(message)
 
+
 def compute_printed_channel_for_message(message):
     channel = message.channel
     return compute_printed_channel(channel)
+
 
 def compute_printed_channel(channel):
     if isinstance(channel, discord.TextChannel):
@@ -928,12 +1003,15 @@ def compute_printed_channel(channel):
 
     return "<UNKNOWN>"
 
+
 def compute_printed_user(user):
     return f"<{user.name}>"
+
 
 #
 # RUN
 #
+
 
 if __name__ == "__main__":
     token = os.getenv('DISCORD_TOKEN')
