@@ -32,7 +32,7 @@ COMMAND_PREFIX="cmd!"
 
 # Discord status to set after the bot is logged in
 # Accepts "online", "idle", "dnd", and "invisible"
-DEFAULT_STATUS="Online"
+DEFAULT_STATUS="online"
 
 # Status message to set after the bot is logged in
 DEFAULT_STATUS_MESSAGE="Running :D"
