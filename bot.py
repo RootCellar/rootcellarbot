@@ -424,7 +424,25 @@ async def on_command_error(ctx, error):
     if not isinstance(error, commands.CommandError):
         raise ValueError("error is not a CommandError")
 
-    await ctx.reply(f"Command Invocation Failed: {error}")
+    suberror_causes = []
+    suberror = error
+
+    # Collect causes
+    while suberror.__cause__ is not None:
+        suberror = suberror.__cause__
+        suberror_causes.append(str(suberror))
+
+    # Send error cause trace to log
+    log(f"Command Invocation Failed: {error}")
+    for suberror_cause in suberror_causes:
+        log(f"Caused by: {suberror_cause}")
+
+    # Send error cause trace to chat
+    suberror_lines = []
+    for cause in suberror_causes:
+        suberror_lines.append(f"Caused by: `{cause}`")
+    suberror_info = "\n".join(suberror_lines)
+    await ctx.reply(f"Command Invocation Failed: `{error}`\n{suberror_info}")
 
     # await ctx.send("well that threw an error")
     # await ctx.send(random_error_message())
