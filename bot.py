@@ -295,15 +295,45 @@ def random_error_message():
     return random.choice(ERROR_MESSAGES)
 
 
-def mock_string(message):
+def mock_word(word: str) -> str:
+    if len(word) < 1:
+        return word
+
+    if len(word) == 1:
+        return word.upper()
+
+    lettercount = 0
+    can_cap = []
+    for i in range(0, len(word)):
+        char = word[i]
+        if char.isalpha():
+            lettercount += 1
+            can_cap.append(i)
+
+    num_to_capitalize = int(float(lettercount) * (67/100))
+    word = word.lower()
+
+    which_to_capitalize = []
+    for j in range(num_to_capitalize):
+        i = random.choice(range(0, len(can_cap)))
+        which_to_capitalize.append(can_cap[i])
+        can_cap.remove(can_cap[i])
+
     to_ret = ""
-    for i in range(0, len(message)):
-        rand = random.randint(0, 2)
-        if rand == 0:
-            to_ret += message[i].upper()
-        else:
-            to_ret += message[i].lower()
+    for i in range(0, len(word)):
+        char = word[i]
+        if i in which_to_capitalize:
+            char = char.upper()
+        to_ret += char
     return to_ret
+
+
+def mock_string(message: str) -> str:
+    words = message.split(" ")
+    new_words = []
+    for word in words:
+        new_words.append(mock_word(word))
+    return " ".join(new_words)
 
 
 #
