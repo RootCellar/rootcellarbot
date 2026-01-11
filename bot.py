@@ -486,13 +486,16 @@ async def hello_command(ctx):
 @bot.command(name = "info", help = "Send bot info")
 async def info_command(ctx):
     async with ctx.typing():
+
+        now = datetime.datetime.now()
+
         message = discord.Embed(colour = BOT_COLOR)
 
         message.set_thumbnail(url = BOT_ICON_URL)
         message.set_author(name = BOT_NAME, icon_url = BOT_ICON_URL)
         message.set_footer(text = f"Requested by {ctx.author}", icon_url = ctx.author.avatar.url)
 
-        message.add_field(name = "key", value = "value")
+        message.add_field(name = "Current Time", value = format_datetime(now))
         message.add_field(name = "Startup Time", value = format_datetime(startup_time))
 
         await ctx.channel.send(embed = message)
