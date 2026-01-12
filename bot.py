@@ -268,6 +268,8 @@ main_bot_data = JsonDictionary(name = "main_data", dictionary = main_bot_data_js
 
 class CustomBot(commands.Bot):
     async def close(self):
+        log("Cleaning up...")
+
         for key in debug_channel_dict.keys():
             main_dict_key = get_debug_channel_value_path(key)
             main_bot_data.dictionary_set(main_dict_key, debug_channel_dict[key])
@@ -275,6 +277,7 @@ class CustomBot(commands.Bot):
         log("Saving data...")
         await save_json_data(main_bot_data.get_dictionary(), MAIN_DATA_FILE)
 
+        log("Shutting down...")
         await super().close()
 
 
