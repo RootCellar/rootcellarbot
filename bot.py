@@ -123,8 +123,6 @@ def get_debug_channel_value(channel: str):
 
 def set_debug_channel_value(channel: str, value: bool):
     debug_channel_dict[channel] = value
-    key = get_debug_channel_value_path(channel)
-    # main_bot_data.dictionary_set(key, value)
 
 
 def should_log_debug_channel(channel: str):
@@ -270,7 +268,11 @@ main_bot_data = JsonDictionary(name = "main_data", dictionary = main_bot_data_js
 
 class CustomBot(commands.Bot):
     async def close(self):
-        print("Saving data...")
+        for key in debug_channel_dict.keys():
+            main_dict_key = get_debug_channel_value_path(key)
+            main_bot_data.dictionary_set(main_dict_key, debug_channel_dict[key])
+
+        log("Saving data...")
         await save_json_data(main_bot_data.get_dictionary(), MAIN_DATA_FILE)
 
         await super().close()
