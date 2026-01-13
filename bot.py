@@ -293,10 +293,14 @@ bot = CustomBot(command_prefix = COMMAND_PREFIX, intents = intents)
 #
 
 
+def roll_die(sides):
+    return random.choice(range(1, sides + 1))
+
+
 def roll_dice(num_dice: int, sides: int):
     total = 0
     for x in range(1, num_dice + 1):
-        total += random.choice(range(1, sides + 1))
+        total += roll_die(sides)
     return total
 
 
