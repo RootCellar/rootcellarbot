@@ -79,7 +79,7 @@ ERROR_MESSAGES = [
     "I'm gonna", "Ask ChatGPT", "imagine", "yesn't", "Segmentation fault (core dumped)"
 ]
 
-NO_PERMISSION_ERROR_MESSAGE = f"Sorry, you don't have permission to do that."
+NO_PERMISSION_ERROR_MESSAGE = "Sorry, you don't have permission to do that."
 
 #
 # Emoji's
