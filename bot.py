@@ -46,6 +46,10 @@ WORDLE_WORDS_FILE = os.getenv('WORDLE_WORDS_FILE', default = '')
 
 DEBUG_CHANNEL_DICT_PATH = "debug.type"
 
+INFO_DESCRIPTION = "A Discord bot that's meant to bring some extra fun into the chat with a variety of available commands and a couple games"
+INFO_USAGE = f"Use `{COMMAND_PREFIX}help` to get a list of available commands"
+INFO_REPOSITORY_URL = "[Click Here](<https://github.com/RootCellar/RootCellarBot>)"
+
 FORTUNES = [
     "It is certain",
     "It is decidedly so",
@@ -499,6 +503,10 @@ async def info_command(ctx):
         message.set_thumbnail(url = BOT_ICON_URL)
         message.set_author(name = BOT_NAME, icon_url = BOT_ICON_URL)
         message.set_footer(text = f"Requested by {ctx.author}", icon_url = ctx.author.avatar.url)
+
+        message.add_field(name = "Description", value = INFO_DESCRIPTION, inline = False)
+        message.add_field(name = "Commands", value = INFO_USAGE, inline = False)
+        message.add_field(name = "Source Code Repository", value = INFO_REPOSITORY_URL, inline = False)
 
         message.add_field(name = "Current Time", value = format_datetime(now))
         message.add_field(name = "Startup Time", value = format_datetime(startup_time))
