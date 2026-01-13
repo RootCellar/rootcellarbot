@@ -135,7 +135,6 @@ def should_log_debug_channel(channel: str):
     if value is True:
         return True
     if value is None:
-        pass
         # This serves as an "automatic registration", so that
         # commands such as "prefix!debugged" will show all channels
         # that the program has attempted to use
