@@ -518,6 +518,33 @@ async def info_command(ctx):
         await ctx.channel.send(embed = message)
 
 
+@bot.command(name = "plaque", help = "Professionally plaque a message")
+async def plaque_command(ctx):
+    async with ctx.typing():
+        message_reference = ctx.message.reference
+        if message_reference is None:
+            await ctx.reply("Plaque *what*? Reply to the message that you want to place on a plaque.")
+            return
+
+        try:
+            referenced_message = await ctx.fetch_message(message_reference.message_id)
+        except Exception as error:
+            await ctx.reply(f"Failed to fetch message reference: {error}")
+            return
+
+        content = referenced_message.content
+        if len(content) < 1 or len(content) > 512:
+            await ctx.reply("Sorry, I can't do that.")
+            return
+
+        now = datetime.datetime.now()
+
+        message = discord.Embed(colour = BOT_COLOR, title = referenced_message.author.display_name, description = referenced_message.content, timestamp = now)
+        message.set_thumbnail(url = referenced_message.author.avatar.url)
+        message.set_footer(text = f"Requested by {ctx.author}", icon_url = ctx.author.avatar.url)
+        await ctx.channel.send(embed = message)
+
+
 @bot.command(name = "debug", help = "(Admin-only) Enable/Disable specific debug channels")
 async def debug_command(ctx, name: str, value: bool):
     if is_admin_user(ctx.author) is False:
