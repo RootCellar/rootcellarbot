@@ -6,6 +6,7 @@
 #
 
 import os
+import shutil
 import re
 import json
 import requests
@@ -171,9 +172,21 @@ def format_datetime(datetime_to_format: datetime.datetime):
     return formatted_datetime
 
 
+def format_datetime_all_dashes(datetime_to_format: datetime.datetime):
+    formatted_datetime = datetime_to_format.strftime(f"%Y-%m-%d-%H-%M-%S")
+    return formatted_datetime
+
+
 #
 # DATA
 #
+
+
+def mkdir_ignore_exists(dir_name):
+    try:
+        os.mkdir(dir_name)
+    except FileExistsError:
+        pass
 
 
 def load_file_lines(file_name: str) -> list[str]:
@@ -198,6 +211,22 @@ async def save_json_data(data, file_name):
     async with data_lock:
         with open(file_name, 'w') as file:
             json.dump(data, file, indent = 4)
+
+
+async def backup_and_save_json_data(data, file_name):
+    if os.path.exists(file_name):
+        try:
+            dir_name = "discord_bot_data_backups"
+            mkdir_ignore_exists(dir_name)
+            time_formatted = format_datetime_all_dashes(datetime.datetime.now())
+            dst_file_name = f"{file_name}-{time_formatted}"
+            dst_name = "discord_bot_data_backups/" + dst_file_name
+            debug("backup", f"Backing up '{file_name}' to '{dst_name}'...")
+            shutil.copyfile(file_name, dst_name)
+        except OSError as error:
+            log(f"Failed to back up {file_name}: {error}")
+
+    await save_json_data(data, file_name)
 
 
 class JsonDictionary(object):
@@ -278,7 +307,7 @@ class CustomBot(commands.Bot):
             main_bot_data.dictionary_set(main_dict_key, debug_channel_dict[key])
 
         log("Saving data...")
-        await save_json_data(main_bot_data.get_dictionary(), MAIN_DATA_FILE)
+        await backup_and_save_json_data(main_bot_data.get_dictionary(), MAIN_DATA_FILE)
 
         log("Shutting down...")
         await super().close()
