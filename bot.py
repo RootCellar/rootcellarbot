@@ -13,6 +13,8 @@ import requests
 import random
 import datetime
 
+import threading
+
 import asyncio
 from asyncio import Lock
 
@@ -234,6 +236,9 @@ class JsonDictionary(object):
         if dictionary is None:
             dictionary = dict()
 
+        self.data_structure_lock = threading.Lock()
+        self.get_and_set_lock = threading.Lock()
+
         self.name = name
         self.dictionary = dictionary
 
@@ -264,20 +269,23 @@ class JsonDictionary(object):
         return curr_dict
 
     def get_sub_dict_and_leaf_node_key(self, key):
-        split_key = key.split('.')
-        dict_path = split_key[0:-1]
-        leaf_key = split_key[-1]
-        self.print_debug(f"dict_path: {dict_path}, leaf_key: {leaf_key}")
-        sub_dict = self.ensure_path_exists_and_get_dictionary(dict_path)
-        return sub_dict, leaf_key
+        with self.data_structure_lock:
+            split_key = key.split('.')
+            dict_path = split_key[0:-1]
+            leaf_key = split_key[-1]
+            self.print_debug(f"dict_path: {dict_path}, leaf_key: {leaf_key}")
+            sub_dict = self.ensure_path_exists_and_get_dictionary(dict_path)
+            return sub_dict, leaf_key
 
     def dictionary_get(self, key: str):
         # Type Hint
         if isinstance(self.dictionary, dict) is False:
             raise TypeError("Expected a dictionary")
 
-        sub_dict, leaf_key = self.get_sub_dict_and_leaf_node_key(key)
-        value = sub_dict.get(leaf_key)
+        with self.get_and_set_lock:
+            sub_dict, leaf_key = self.get_sub_dict_and_leaf_node_key(key)
+            value = sub_dict.get(leaf_key)
+
         self.print_debug(f"dictionary_get: '{key}': '{value}'")
         return value
 
@@ -286,12 +294,13 @@ class JsonDictionary(object):
         if isinstance(self.dictionary, dict) is False:
             raise TypeError("Expected a dictionary")
 
-        sub_dict, leaf_key = self.get_sub_dict_and_leaf_node_key(key)
-        if isinstance(sub_dict.get(leaf_key), dict) is True:
-            raise TypeError(f"Expected a non-dictionary, but found a dictionary at {key}")
-        else:
-            sub_dict[leaf_key] = value
-            self.print_debug(f"dictionary_set: '{key}' to '{value}'")
+        with self.get_and_set_lock:
+            sub_dict, leaf_key = self.get_sub_dict_and_leaf_node_key(key)
+            if isinstance(sub_dict.get(leaf_key), dict) is True:
+                raise TypeError(f"Expected a non-dictionary, but found a dictionary at {key}")
+            else:
+                sub_dict[leaf_key] = value
+                self.print_debug(f"dictionary_set: '{key}' to '{value}'")
 
 
 main_bot_data_json = load_json_data(MAIN_DATA_FILE)
