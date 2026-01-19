@@ -693,11 +693,15 @@ async def kitty_command(ctx):
     item = json[0]
     if item is None:
         raise ValueError("'item' is not set")
+
     url = item["url"]
     if url is None:
         raise ValueError("'url' is not set")
 
-    await ctx.send(f"{url}")
+    embed = discord.Embed(title = "Cat", color = 0x777777)
+    embed.set_image(url = url)
+
+    await ctx.send(embed = embed)
 
 
 @bot.command(name = "doggo", help = "Drop a cute dog photo into the chat")
@@ -708,11 +712,15 @@ async def doggo_command(ctx):
     item = json[0]
     if item is None:
         raise ValueError("'item' is not set")
+
     url = item["url"]
     if url is None:
         raise ValueError("'url' is not set")
 
-    await ctx.send(f"{url}")
+    embed = discord.Embed(title = "Dog", color = 0xff0000)
+    embed.set_image(url = url)
+
+    await ctx.send(embed = embed)
 
 
 @bot.command(name = "penguin", help = "Drop a penguin photo into the chat")
