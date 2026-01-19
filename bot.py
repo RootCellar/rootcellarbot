@@ -723,11 +723,19 @@ async def penguin_command(ctx):
 
     if item is None:
         raise ValueError("'item' is not set")
+
     url = item["img"]
+    species = item["species"]
+
     if url is None:
         raise ValueError("'url' is not set")
+    if species is None:
+        raise ValueError("'species' is not set")
 
-    await ctx.send(f"{url}")
+    embed = discord.Embed(title = "Penguin", description = f"**Species**: || {species} ||", color = 0x0000ff)
+    embed.set_image(url = url)
+
+    await ctx.send(embed = embed)
 
 
 @bot.command(name = "no", help = "Send a creative way of just saying `no`")
