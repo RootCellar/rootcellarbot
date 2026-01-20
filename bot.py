@@ -533,6 +533,38 @@ async def hello_command(ctx):
     await ctx.send("Hello! I'm a bot.")
 
 
+class ErrorButtons(discord.ui.View):
+    def __init__(self, *, timeout=600):
+        super().__init__(timeout=timeout)
+
+    @discord.ui.button(label = "Button One", style = discord.ButtonStyle.blurple)
+    async def blurple_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        button.label = random_error_message()
+        await interaction.response.edit_message(view = self)
+
+    @discord.ui.button(label = "Button Two", style = discord.ButtonStyle.gray)
+    async def gray_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        button.label = random_error_message()
+        await interaction.response.edit_message(view = self)
+
+    @discord.ui.button(label = "Button Three", style = discord.ButtonStyle.green)
+    async def green_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        button.label = random_error_message()
+        await interaction.response.edit_message(view = self)
+
+    @discord.ui.button(label = "Button Four", style = discord.ButtonStyle.red)
+    async def red_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        button.label = random_error_message()
+        await interaction.response.edit_message(view = self)
+
+
+@bot.command(name = "test_buttons", help = "", hidden = True)
+async def test_buttons_command(ctx):
+    async with ctx.typing():
+        view = ErrorButtons()
+        await ctx.send("This message is for testing buttons", view = view)
+
+
 @bot.command(name = "info", help = "Send bot info")
 async def info_command(ctx):
     async with ctx.typing():
