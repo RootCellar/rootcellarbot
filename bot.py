@@ -453,6 +453,22 @@ def is_admin_user(user):
 
 
 async def send_dm_to_user(user: discord.User, message: str = None, embed: discord.Embed = None, silent: bool = False):
+    details_list = []
+
+    if message is not None:
+        details_list.append(f"Message: `{message}`")
+
+    if embed is not None:
+        details_list.append("Has Embed")
+
+    if silent is True:
+        details_list.append("Is Silent")
+    else:
+        details_list.append("Is Not Silent")
+
+    details = ", ".join(details_list)
+
+    debug("DM", f"Sending DM to {user.name}. {details}")
     await user.create_dm()
     await user.send(message, embed = embed, silent = silent)
 
