@@ -628,7 +628,7 @@ async def plaque_command(ctx):
             return
 
         content = referenced_message.content
-        if len(content) < 1 or len(content) > 512:
+        if len(content) < 1 or len(content) > 2048:
             await ctx.reply("Sorry, I can't do that.")
             return
 
