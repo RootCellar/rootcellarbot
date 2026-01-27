@@ -452,6 +452,16 @@ def is_admin_user(user):
     return False
 
 
+async def send_dm_to_user(user: discord.User, message: str = None, embed: discord.Embed = None, silent: bool = False):
+    await user.create_dm()
+    await user.send(message, embed = embed, silent = silent)
+
+
+async def send_dm_to_user_by_id(id: int, message: str = None, embed: discord.Embed = None, silent: bool = False):
+    user = await bot.fetch_user(id)
+    await send_dm_to_user(user, message, embed = embed, silent = silent)
+
+
 #
 # On Connect
 #
@@ -674,7 +684,15 @@ async def say_to_command(ctx, channel_id: int, message: str):
         await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
 
 
-@bot.command(name = "status", help = "(Admin-only) Changes the bot's status")
+@bot.command(name = "dm", help = "(Admin-only) Forces the bot to send the given message to the given user by ID", hidden = True)
+async def dm_command(ctx, user_id: int, message: str):
+    if is_admin_user(ctx.author):
+        await send_dm_to_user_by_id(user_id, message)
+    else:
+        await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
+
+
+@bot.command(name = "status", help = "(Admin-only) Changes the bot's status", hidden = True)
 async def status_command(ctx, status: str, message: str):
     if is_admin_user(ctx.author) is False:
         await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
