@@ -624,7 +624,7 @@ async def plaque_command(ctx):
         await ctx.channel.send(embed = message)
 
 
-@bot.command(name = "debug", help = "(Admin-only) Enable/Disable specific debug channels")
+@bot.command(name = "debug", help = "(Admin-only) Enable/Disable specific debug channels", hidden = True)
 async def debug_command(ctx, name: str, value: bool):
     if is_admin_user(ctx.author) is False:
         await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
@@ -643,7 +643,7 @@ async def debug_command(ctx, name: str, value: bool):
     await ctx.reply(f"Set `{key}` to `{value}`")
 
 
-@bot.command(name = "debugged", help = "(Admin-only) Show debug channel values")
+@bot.command(name = "debugged", help = "(Admin-only) Show debug channel values", hidden = True)
 async def debugged_command(ctx):
     if is_admin_user(ctx.author) is False:
         await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
@@ -667,7 +667,7 @@ async def debugged_command(ctx):
     await ctx.reply(f"```{string_to_send}```")
 
 
-@bot.command(name = "say", help = "(Admin-only) Forces the bot to send the given message")
+@bot.command(name = "say", help = "(Admin-only) Forces the bot to send the given message", hidden = True)
 async def say_command(ctx, message: str):
     if is_admin_user(ctx.author):
         await ctx.send(message)
@@ -675,7 +675,7 @@ async def say_command(ctx, message: str):
         await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
 
 
-@bot.command(name = "say_to", help = "(Admin-only) Forces the bot to send the given message to the given channel")
+@bot.command(name = "say_to", help = "(Admin-only) Forces the bot to send the given message to the given channel", hidden = True)
 async def say_to_command(ctx, channel_id: int, message: str):
     if is_admin_user(ctx.author):
         channel = await bot.fetch_channel(channel_id)
