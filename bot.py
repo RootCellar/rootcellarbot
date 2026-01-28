@@ -151,6 +151,10 @@ def debug(channel: str, message: str):
         log(f"[DEBUG] {channel}: {message}")
 
 
+def match_all_regex(expr: str, text: str) -> list[str]:
+    return re.findall(expr, text)
+
+
 def strip_non_ascii(text: str):
     return re.sub(r'[^\x00-\x7f]', r'?', text)
 
@@ -609,6 +613,43 @@ async def info_command(ctx):
 
         message.add_field(name = "Current Time", value = format_datetime(now))
         message.add_field(name = "Startup Time", value = format_datetime(startup_time))
+
+        await ctx.channel.send(embed = message)
+
+
+@bot.command(name = "match", help = "Perform Regular Expression matching on the given text or referenced message")
+async def match_command(ctx, expr: str, text: str = None):
+    async with ctx.typing():
+        content = None
+        message_reference = ctx.message.reference
+        if message_reference is not None:
+            try:
+                referenced_message = await ctx.fetch_message(message_reference.message_id)
+            except Exception as error:
+                await ctx.reply(f"Failed to fetch message reference: {error}")
+                return
+
+            content = referenced_message.content
+            if len(content) < 1 or len(content) > 3072:
+                await ctx.reply("Sorry, I can't do that.")
+                return
+        else:
+            if text is None:
+                await ctx.reply("No text provided! Provide text by supplying a 2nd string or replying to another message.")
+                return
+            content = text
+
+        matches = match_all_regex(expr, content)
+
+        message = discord.Embed(colour = BOT_COLOR, title = "Regular Expression Match", description = f"`{expr}`")
+        message.set_footer(text = f"Requested by {ctx.author}", icon_url = ctx.author.avatar.url)
+
+        matches_formatted = []
+
+        for match in matches:
+            matches_formatted.append(f"`{match}`")
+
+        message.add_field(name = "Matches", value = ", ".join(matches_formatted), inline = False)
 
         await ctx.channel.send(embed = message)
 
