@@ -128,7 +128,7 @@ def get_debug_channel_value(channel: str):
     return value
 
 
-def set_debug_channel_value(channel: str, value: bool):
+def set_debug_channel_value(channel: str, value: bool) -> None:
     debug_channel_dict[channel] = value
 
 
@@ -155,14 +155,14 @@ def strip_non_ascii(text: str):
     return re.sub(r'[^\x00-\x7f]', r'?', text)
 
 
-def log(message):
+def log(message: str) -> None:
     message_to_write = generate_log_message(message)
     print(message_to_write)
     with open('info.log', 'a') as file:
         file.write(f"{message_to_write} \n")
 
 
-def generate_log_message(message):
+def generate_log_message(message: str) -> str:
     formatted_datetime = format_datetime(datetime.datetime.now())
     formatted_message = strip_non_ascii(message)
     message_to_write = f"{formatted_datetime} - {formatted_message}"
@@ -184,7 +184,7 @@ def format_datetime_all_dashes(datetime_to_format: datetime.datetime):
 #
 
 
-def mkdir_ignore_exists(dir_name):
+def mkdir_ignore_exists(dir_name: str) -> None:
     try:
         os.mkdir(dir_name)
     except FileExistsError:
@@ -200,7 +200,7 @@ def load_file_lines(file_name: str) -> list[str]:
     return lines
 
 
-def load_json_data(file_name):
+def load_json_data(file_name: str) -> dict:
     debug("json_data", f"Loading {file_name}...")
     if os.path.exists(file_name):
         with open(file_name, 'r') as file:
@@ -208,14 +208,14 @@ def load_json_data(file_name):
     return {}
 
 
-async def save_json_data(data, file_name):
+async def save_json_data(data: dict, file_name: str) -> None:
     debug("json_data", f"Saving {file_name}...")
     async with data_lock:
         with open(file_name, 'w') as file:
             json.dump(data, file, indent = 4)
 
 
-async def backup_and_save_json_data(data, file_name):
+async def backup_and_save_json_data(data: dict, file_name: str) -> None:
     if os.path.exists(file_name):
         try:
             dir_name = "discord_bot_data_backups"
@@ -268,7 +268,7 @@ class JsonDictionary(object):
 
         return curr_dict
 
-    def get_sub_dict_and_leaf_node_key(self, key):
+    def get_sub_dict_and_leaf_node_key(self, key: str):
         with self.data_structure_lock:
             split_key = key.split('.')
             dict_path = split_key[0:-1]
@@ -330,7 +330,7 @@ bot = CustomBot(command_prefix = COMMAND_PREFIX, intents = intents)
 #
 
 
-def roll_die(sides):
+def roll_die(sides: int):
     return random.choice(range(1, sides + 1))
 
 
@@ -390,7 +390,7 @@ def mock_string(message: str) -> str:
 # Performs a GET fetch and returns the JSON response
 # when the GET was successful. Otherwise, returns `None`
 #
-def http_get_json_generic(url):
+def http_get_json_generic(url: str):
     debug("http", f"JSON GET {url}")
     request = requests.get(url)
 
@@ -419,7 +419,7 @@ async def get_random_no():
     return reason
 
 
-def status_str_to_discord_status(status):
+def status_str_to_discord_status(status: str):
     if status == "online":
         discord_status = discord.Status.online
     elif status == "idle":
@@ -522,7 +522,7 @@ async def on_disconnect():
 
 
 @bot.event
-async def on_command_error(ctx, error):
+async def on_command_error(ctx: discord.ext.commands.Context, error: discord.ext.commands.CommandError):
     log(f"Command invocation threw an error: {error}")
 
     if not isinstance(ctx, commands.Context):
