@@ -473,8 +473,8 @@ async def send_dm_to_user(user: discord.User, message: str = None, embed: discor
     await user.send(message, embed = embed, silent = silent)
 
 
-async def send_dm_to_user_by_id(id: int, message: str = None, embed: discord.Embed = None, silent: bool = False):
-    user = await bot.fetch_user(id)
+async def send_dm_to_user_by_id(user_id: int, message: str = None, embed: discord.Embed = None, silent: bool = False):
+    user = await bot.fetch_user(user_id)
     await send_dm_to_user(user, message, embed = embed, silent = silent)
 
 
@@ -754,9 +754,9 @@ async def quote_command(ctx):
 @bot.command(name = "kitty", help = "Drop a cute kitty photo into the chat")
 async def kitty_command(ctx):
     async with ctx.typing():
-        json = http_get_json_generic("https://api.thecatapi.com/v1/images/search")
+        response_json = http_get_json_generic("https://api.thecatapi.com/v1/images/search")
 
-    item = json[0]
+    item = response_json[0]
     if item is None:
         raise ValueError("'item' is not set")
 
@@ -773,9 +773,9 @@ async def kitty_command(ctx):
 @bot.command(name = "doggo", help = "Drop a cute dog photo into the chat")
 async def doggo_command(ctx):
     async with ctx.typing():
-        json = http_get_json_generic("https://api.thedogapi.com/v1/images/search")
+        response_json = http_get_json_generic("https://api.thedogapi.com/v1/images/search")
 
-    item = json[0]
+    item = response_json[0]
     if item is None:
         raise ValueError("'item' is not set")
 
