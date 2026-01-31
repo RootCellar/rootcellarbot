@@ -19,8 +19,6 @@ and `help` can be replaced with other commands.
 The following commands are available:
 ```
 choose_random   Choose a random item out of the given items
-debug           (Admin-only) Enable/Disable specific debug channels
-debugged        (Admin-only) Show debug channel values
 doggo           Drop a cute dog photo into the chat
 error           Send a random error message
 fortune         Ask a question and learn your fortune
@@ -33,16 +31,15 @@ info            Send bot info
 joke            Drop a joke into the chat
 kitty           Drop a cute kitty photo into the chat
 letter          Guess a letter for hangman
+match           Perform Regular Expression matching on the given text or re...
 mock            Generate and send a string mocking the given string
 no              Send a creative way of just saying `no`
 penguin         Drop a penguin photo into the chat
+plaque          Professionally plaque a message
 quote           Drop a wise quote into the chat
 random_hangman  Start a game of Hangman with a randomly chosen word
 random_wordle   Start a game of Wordle with a randomly chosen word
 roll_dice       Rolls dice and sends the total
-say             (Admin-only) Forces the bot to send the given message
-say_to          (Admin-only) Forces the bot to send the given message to th...
-status          (Admin-only) Changes the bot's status
 wordle_channel  Start a game of Wordle in another channel
 ```
 
