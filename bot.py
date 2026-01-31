@@ -1152,7 +1152,7 @@ def generate_wordle_guess_response(word: str, guess: str):
     return response
 
 
-@bot.command(name = "game", help = "EXPERIMENT!! DOES NOT DO ANYTHING OF VALUE")
+@bot.command(name = "game", help = "EXPERIMENT!! DOES NOT DO ANYTHING OF VALUE", hidden = True)
 async def game_command(ctx):
 
     # Just to give Pycharm a hint for the type
