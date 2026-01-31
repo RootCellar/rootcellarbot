@@ -85,6 +85,16 @@ ERROR_MESSAGES = [
 NO_PERMISSION_ERROR_MESSAGE = "Sorry, you don't have permission to do that."
 
 #
+# Colors
+#
+
+COLOR_RED = 0xff0000
+COLOR_GREEN = 0x00ff00
+COLOR_BLUE = 0x0000ff
+
+COLOR_GRAY = 0x777777
+
+#
 # Emoji's
 #
 
@@ -805,7 +815,7 @@ async def kitty_command(ctx):
     if url is None:
         raise ValueError("'url' is not set")
 
-    embed = discord.Embed(title = "Cat", color = 0x777777)
+    embed = discord.Embed(title = "Cat", color = COLOR_GRAY)
     embed.set_image(url = url)
 
     await ctx.send(embed = embed)
@@ -824,7 +834,7 @@ async def doggo_command(ctx):
     if url is None:
         raise ValueError("'url' is not set")
 
-    embed = discord.Embed(title = "Dog", color = 0xff0000)
+    embed = discord.Embed(title = "Dog", color = COLOR_RED)
     embed.set_image(url = url)
 
     await ctx.send(embed = embed)
@@ -847,7 +857,7 @@ async def penguin_command(ctx):
     if species is None:
         raise ValueError("'species' is not set")
 
-    embed = discord.Embed(title = "Penguin", description = f"**Species**: || {species} ||", color = 0x0000ff)
+    embed = discord.Embed(title = "Penguin", description = f"**Species**: || {species} ||", color = COLOR_BLUE)
     embed.set_image(url = url)
 
     await ctx.send(embed = embed)
@@ -903,7 +913,7 @@ async def choose_random_command(ctx, *args):
 async def fortune_command(ctx):
     fortune = random.choice(FORTUNES)
 
-    embed = discord.Embed(title = "Fortune", description = fortune, color = 0x0000ff)
+    embed = discord.Embed(title = "Fortune", description = f"{fortune}", color = COLOR_RED)
 
     await ctx.reply(embed = embed)
 
