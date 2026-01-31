@@ -902,7 +902,9 @@ async def roll_dice_command(ctx, num_dice: int, sides: int):
 
     total = roll_dice(num_dice, sides)
 
-    await ctx.send(f"`{total}`")
+    embed = discord.Embed(title = f"{EMOJI_DICE} **{total}**", color = COLOR_RED)
+
+    await ctx.reply(embed = embed)
 
 
 @bot.command(name = "choose_random", help = "Choose a random item out of the given items")
