@@ -102,6 +102,8 @@ EMOJI_GREEN_SQUARE = '\U0001F7E9'
 EMOJI_YELLOW_SQUARE = '\U0001F7E8'
 EMOJI_BLACK_SQUARE = '\U00002B1B'
 
+EMOJI_DICE = '\U0001F3B2'
+
 MAIN_DATA_FILE = "main_bot_data.json"
 
 #
@@ -906,7 +908,10 @@ async def roll_dice_command(ctx, num_dice: int, sides: int):
 @bot.command(name = "choose_random", help = "Choose a random item out of the given items")
 async def choose_random_command(ctx, *args):
     choice = random.choice(args)
-    await ctx.send(f"Random Choice: || `{choice}` ||")
+
+    embed = discord.Embed(title = f"{EMOJI_DICE} Random Choice", description = f"|| **{choice}** ||", color = COLOR_BLUE)
+
+    await ctx.reply(embed = embed)
 
 
 @bot.command(name = "fortune", help = "Ask a question and learn your fortune")
