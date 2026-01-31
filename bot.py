@@ -900,9 +900,12 @@ async def choose_random_command(ctx, *args):
 
 
 @bot.command(name = "fortune", help = "Ask a question and learn your fortune")
-async def fortune_command(ctx, *args):
+async def fortune_command(ctx):
     fortune = random.choice(FORTUNES)
-    await ctx.send(fortune)
+
+    embed = discord.Embed(title = "Fortune", description = fortune, color = 0x0000ff)
+
+    await ctx.reply(embed = embed)
 
 
 async def create_hangman_game_in_channel(channel, word):
