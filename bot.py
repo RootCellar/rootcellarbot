@@ -92,6 +92,7 @@ COLOR_RED = 0xff0000
 COLOR_GREEN = 0x00ff00
 COLOR_BLUE = 0x0000ff
 
+COLOR_YELLOW = 0xffff00
 COLOR_GRAY = 0x777777
 
 #
@@ -103,6 +104,7 @@ EMOJI_YELLOW_SQUARE = '\U0001F7E8'
 EMOJI_BLACK_SQUARE = '\U00002B1B'
 
 EMOJI_DICE = '\U0001F3B2'
+EMOJI_PARTY_POPPER = '\U0001F389'
 
 MAIN_DATA_FILE = "main_bot_data.json"
 
@@ -1037,8 +1039,13 @@ async def create_wordle_game_in_channel(channel, word):
     main_bot_data.dictionary_set(f"{base_key}.word", word)
     main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
     main_bot_data.dictionary_set(f"{base_key}.guessed", [])
-    await channel.send("Starting a game of Wordle!")
-    await channel.send(f"`{length}` letters... \nWhat is it? \nUse `{COMMAND_PREFIX}guess_word <word>` to guess!")
+
+    embed = discord.Embed(title = "Wordle", color = COLOR_YELLOW)
+
+    embed.add_field(name = "Starting a game of Wordle in this channel!", value = f"The word has `{length}` letters...", inline = False)
+    embed.add_field(name = "What is it?", value = f"Use `{COMMAND_PREFIX}guess_word <word>` to guess!", inline = False)
+
+    await channel.send(embed = embed)
 
 
 @bot.command(name = "random_wordle", help = "Start a game of Wordle with a randomly chosen word")
@@ -1109,20 +1116,24 @@ async def wordle_guess_command(ctx, word_guess: str):
         guessed.append(word_guess)
         guesses -= 1
 
-        # result_to_show = generate_wordle_guess_response(word, word_guess)
         result_lines = []
         for guess in guessed:
             guess_response = generate_wordle_guess_response(word, guess)
             result_lines.append(f"`{guess}` - `{guess_response}`")
         result_to_show = "\n".join(result_lines)
 
-        await ctx.reply(f"{result_to_show}\nGuesses Remaining: {guesses}")
+        guess_remaining_text = f"Guesses Remaining: {guesses}"
+        embed = discord.Embed(title = "Wordle Results", description = f"{guess_remaining_text}\n\n{result_to_show}", color = COLOR_YELLOW)
+
+        await ctx.reply(embed = embed)
 
         if word_guess == word:
-            await ctx.reply("You win! Great Job!")
+            win_embed = discord.Embed(title = f"You Win! Great Job! {EMOJI_PARTY_POPPER}", color = COLOR_GREEN)
+            await ctx.reply(embed = win_embed)
             guesses = 0
         elif guesses < 1:
-            await ctx.reply(f"You Lose! Better luck next time! \nThe word was: || {word} ||")
+            lose_embed = discord.Embed(title = "Better luck next time!", description = f"The word was: || {word} ||", color = COLOR_GRAY)
+            await ctx.reply(embed = lose_embed)
             guesses = 0
 
         main_bot_data.dictionary_set(f"{base_key}.guesses", guesses)
