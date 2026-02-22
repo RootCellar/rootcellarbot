@@ -82,6 +82,7 @@ ERROR_MESSAGES = [
     "I'm gonna", "Ask ChatGPT", "imagine", "yesn't", "Segmentation fault (core dumped)"
 ]
 
+PERMISSION_VALID_NAME_PATTERN = "[a-zA-Z_]{2,}"
 NO_PERMISSION_ERROR_MESSAGE = "Sorry, you don't have permission to do that."
 
 #
@@ -365,6 +366,8 @@ def get_server_user_permission_data_path(server_id: int, user_id: int, permissio
 
 
 def get_server_user_permission_value(server_id: int, user_id: int, permission: str):
+    if re.fullmatch(PERMISSION_VALID_NAME_PATTERN, permission) is None:
+        raise ValueError(f"Permission does not match regex {PERMISSION_VALID_NAME_PATTERN}")
     return main_bot_data.dictionary_get(get_server_user_permission_data_path(server_id, user_id, permission))
 
 
