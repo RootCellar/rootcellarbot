@@ -352,8 +352,20 @@ def get_server_data_path_prefix(server_id: int):
     return f"servers.{server_id}"
 
 
-def get_server_admins_data_path(server_id: int):
-    return f"{get_server_data_path_prefix(server_id)}.admins"
+def get_server_user_data_path_prefix(server_id: int, user_id: int):
+    return f"{get_server_data_path_prefix(server_id)}.users.{user_id}"
+
+
+def get_server_user_permissions_data_path(server_id: int, user_id: int):
+    return f"{get_server_user_data_path_prefix(server_id, user_id)}.permissions"
+
+
+def get_server_user_permission_data_path(server_id: int, user_id: int, permission: str):
+    return f"{get_server_user_permissions_data_path(server_id, user_id)}.{permission}"
+
+
+def get_server_user_permission_value(server_id: int, user_id: int, permission: str):
+    return main_bot_data.dictionary_get(get_server_user_permission_data_path(server_id, user_id, permission))
 
 
 def get_quiz_data_path_prefix(server_id: int, quiz_name: str):
