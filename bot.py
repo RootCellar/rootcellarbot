@@ -356,12 +356,12 @@ def get_server_user_data_path_prefix(server_id: int, user_id: int):
     return f"{get_server_data_path_prefix(server_id)}.users.{user_id}"
 
 
-def get_server_user_permissions_data_path(server_id: int, user_id: int):
+def get_server_user_permissions_data_path_prefix(server_id: int, user_id: int):
     return f"{get_server_user_data_path_prefix(server_id, user_id)}.permissions"
 
 
 def get_server_user_permission_data_path(server_id: int, user_id: int, permission: str):
-    return f"{get_server_user_permissions_data_path(server_id, user_id)}.{permission}"
+    return f"{get_server_user_permissions_data_path_prefix(server_id, user_id)}.{permission}"
 
 
 def get_server_user_permission_value(server_id: int, user_id: int, permission: str):
