@@ -76,6 +76,8 @@ FORTUNES = [
     "Very doubtful"
 ]
 
+QUIZ_VALID_NAME_PATTERN = "[a-zA-Z_]{2,}"
+
 ERROR_MESSAGES = [
     "huh?", "what?", "*implodes*", "no u", "AAAAAAAAAAAAAA", "I need....a penguin plushie", "whar?", "~~sanity~~",
     "explode", "you wish", "bruh", "|| no ||",
@@ -373,6 +375,12 @@ def get_server_user_permission_value(server_id: int, user_id: int, permission: s
 
 def get_quiz_data_path_prefix(server_id: int, quiz_name: str):
     return f"{get_server_data_path_prefix(server_id)}.quizzes.{quiz_name}"
+
+
+def is_valid_quiz_name(name: str):
+    if re.fullmatch(QUIZ_VALID_NAME_PATTERN, name) is not None:
+        return True
+    return False
 
 
 def get_user_data_path_prefix(user_id: int):
@@ -1206,6 +1214,18 @@ def generate_wordle_guess_response(word: str, guess: str):
         else:
             response += EMOJI_BLACK_SQUARE
     return response
+
+
+@bot.command(name = "quiz_create", help = "Create a quiz")
+async def quiz_create_command(ctx, name: str):
+    async with ctx.typing():
+        if user_has_permission_in_server(ctx.author.id, ctx.guild.id, "quiz_create") is not True:
+            await ctx.reply(NO_PERMISSION_ERROR_MESSAGE)
+            return
+
+        if is_valid_quiz_name(name) is not True:
+            await ctx.reply("Invalid quiz name! The name must have only alphanumeric characters and underscores.")
+            return
 
 
 #
