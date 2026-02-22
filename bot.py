@@ -498,7 +498,7 @@ def is_admin_user(user):
     return False
 
 
-def is_user_bot_admin_for_server(user_id: int, server_id: int):
+def user_is_bot_admin_in_server(user_id: int, server_id: int):
     user_is_admin = get_server_user_permission_value(server_id, user_id, "is_admin")
 
     if user_is_admin is True:
@@ -508,7 +508,7 @@ def is_user_bot_admin_for_server(user_id: int, server_id: int):
 
 def user_has_permission_in_server(user_id: int, server_id: int, permission: str):
     # If the user is an admin in the server, they automatically have permission to do *anything*
-    if is_user_bot_admin_for_server(user_id, server_id) is True:
+    if user_is_bot_admin_in_server(user_id, server_id) is True:
         return True
 
     permission_value = get_server_user_permission_value(server_id, user_id, permission)
