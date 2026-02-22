@@ -348,6 +348,22 @@ bot = CustomBot(command_prefix = COMMAND_PREFIX, intents = intents)
 #
 
 
+def get_server_data_path_prefix(server_id: int):
+    return f"servers.{server_id}"
+
+
+def get_server_admins_data_path(server_id: int):
+    return f"{get_server_data_path_prefix(server_id)}.admins"
+
+
+def get_quiz_data_path_prefix(server_id: int, quiz_name: str):
+    return f"{get_server_data_path_prefix(server_id)}.quizzes.{quiz_name}"
+
+
+def get_user_data_path_prefix(user_id: int):
+    return f"users.{user_id}"
+
+
 def roll_die(sides: int):
     return random.choice(range(1, sides + 1))
 
