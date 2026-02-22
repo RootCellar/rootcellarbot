@@ -504,20 +504,26 @@ def is_admin_user(user):
 def user_is_bot_admin_in_server(user_id: int, server_id: int):
     user_is_admin = get_server_user_permission_value(server_id, user_id, "is_admin")
 
+    result = False
     if user_is_admin is True:
-        return True
-    return False
+        result = True
+    debug("permission", f"User {user_id} is a bot admin in server {server_id}: {result}")
+    return result
 
 
 def user_has_permission_in_server(user_id: int, server_id: int, permission: str):
+    debug("permission", f"Checking if user {user_id} has permission '{permission}' in server {server_id}")
+
     # If the user is an admin in the server, they automatically have permission to do *anything*
     if user_is_bot_admin_in_server(user_id, server_id) is True:
         return True
 
     permission_value = get_server_user_permission_value(server_id, user_id, permission)
+    result = False
     if permission_value is True:
-        return True
-    return False
+        result = True
+    debug("permission", f"User {user_id} has permission '{permission}' in server {server_id}: {result}")
+    return result
 
 
 async def send_dm_to_user(user: discord.User, message: str = None, embed: discord.Embed = None, silent: bool = False):
