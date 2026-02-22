@@ -498,6 +498,14 @@ def is_admin_user(user):
     return False
 
 
+def is_user_bot_admin_for_server(user_id: int, server_id: int):
+    user_is_admin = get_server_user_permission_value(server_id, user_id, "is_admin")
+
+    if user_is_admin is True:
+        return True
+    return False
+
+
 async def send_dm_to_user(user: discord.User, message: str = None, embed: discord.Embed = None, silent: bool = False):
     details_list = []
 
