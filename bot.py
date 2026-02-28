@@ -1313,7 +1313,7 @@ def get_playing_activity(activities):
 
 
 @bot.event
-async def on_message(message):
+async def on_message(message: discord.Message):
     # Log all messages
     username = compute_printed_user(message.author)
     log(f"Message: [{compute_printed_channel_for_message(message)}] {username} {message.content}")
